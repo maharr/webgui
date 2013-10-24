@@ -2,7 +2,9 @@
 
 <form action="{% url 'converter:map' %}" method="post">
 {% csrf_token %}
-    <input type="text" name="coordinate" id="1"/>
-    <label for="1">Coordinate</label>
+    <input type="text" name="lat" id="1"/>
+    <label for="1">Lat</label><br/>
+    <input type="text" name="long" id="1"/>
+    <label for="1">Long</label>
     <input type="submit" value="Convert"/>
 <form/>

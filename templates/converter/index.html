@@ -6,7 +6,7 @@
 
 <form action="{% url 'converter:map' %}" method="post">
 {% csrf_token %}
-    <select>
+    <select name="system">
         <option value="NE">Northings/Eastings</option>
         <option value="DD">Decimal Degrees</option>
         <option value="DMS">Degree Minute Second</option>

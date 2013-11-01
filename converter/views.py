@@ -9,13 +9,15 @@ def index(request):
 
 def map(request):
     system = request.POST['system']
-    lat = float(request.POST['1'])
-    lng = float(request.POST['4'])
+
     if system == 'NE':
         lat,lng = webgui_convert(float(request.POST['1']), float(request.POST['4']))
-    if system == 'DMS':
+    elif system == 'DMS':
         lat = float(request.POST['1']) + (float(request.POST['2'])/60) + (float(request.POST['3'])/360)
         lng = float(request.POST['4']) + (float(request.POST['5']) / 60) + (float(request.POST['6']) / 360)
+    else:
+        lat = float(request.POST['1'])
+        lng = float(request.POST['4'])
 
     template = loader.get_template('converter/map.html')
     context = RequestContext(request, {'lat': lat, 'long': lng, 'system': system})

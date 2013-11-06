@@ -2,7 +2,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader, RequestContext
-from transformation.OSTN02 import webgui_convert
+from transformation.transformation.OSTN02 import webgui_convert
 
 def index(request):
     return render(request, 'converter/index.html')

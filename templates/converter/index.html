@@ -1,98 +1,128 @@
+<link rel="stylesheet" href="http://formalize.me/assets/css/demo.css" />
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://formalize.me/assets/js/jquery.formalize.js"></script>
+<style type="text/css">
+    .container {
+        font-family: 'Arial';
+        background-color: #c6f0fb;
+        width: 400px;
+        border: 1px solid #000;
+        border-radius: 10px;
+        padding: 15px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 70px;
+    }
 
-<h1>Transform Coordinates</h1>
+    .smalltextbox {
+        width:30px;
+    }
+
+    .normaltextbox {
+        width:60px;
+    }
+
+    .largetextbox {
+        width: 80px;
+    }
+
+</style>
+<body>
+<div class="container">
+    <h1>Transform Coordinates</h1>
 
 
-<form enctype="multipart/form-data" action="{% url 'converter:map' %}" method="post">
-    {% csrf_token %}
-    <select name="system" id="system">
-        <option value="NE">Eastings/Northings</option>
-        <option value="DD">Decimal Degrees</option>
-        <option value="DMS">Degree Minute Second</option>
-    </select>
-    <label for="system">Input System Used</label> <br/>
+    <form enctype="multipart/form-data" action="{% url 'converter:map' %}" method="post">
+        {% csrf_token %}
+        <select name="system" id="system">
+            <option value="NE">Eastings/Northings</option>
+            <option value="DD">Decimal Degrees</option>
+            <option value="DMS">Degree Minute Second</option>
+        </select>
+        <label for="system">Input System Used</label> <br/>
 
-    <div id="userinput">
-        <div id="en">
-            <input type="text" name="east" id="east"/>
-            <label for="east">Easting</label><br/>
-            <input type="text" name="north" id="north"/>
-            <label for="north">Northing</label><br/>
+        <div id="userinput">
+            <div id="en">
+                <input type="text" name="east" id="east" class="largetextbox"/>
+                <label for="east">Easting</label><br/>
+                <input type="text" name="north" id="north" class="largetextbox"/>
+                <label for="north">Northing</label><br/>
+            </div>
+            <div id="dd">
+                <input type="text" name="latdd" id="latdd" class="largetextbox"/>
+                <label for="latdd">Latitude</label><br/>
+                <input type="text" name="lngdd" id="lngdd" class="largetextbox"/>
+                <label for="lngdd">Longitude</label><br/>
+            </div>
+            <div id="dms">
+                <input type="text" name="latd" id="latd" class="smalltextbox"/>
+                <input type="text" name="latm" id="latm" class="smalltextbox"/>
+                <input type="text" name="lats" id="lats" class="normaltextbox"/>
+                <label for="lats">Latitude</label><br/>
+                <input type="text" name="lngd" id="lngd" class="smalltextbox"/>
+                <input type="text" name="lngm" id="lngm" class="smalltextbox"/>
+                <input type="text" name="lngs" id="lngs" class="normaltextbox"/>
+                <label for="lngs">Longitude</label><br/>
+            </div>
+
+            <input type="text" name="height" id="height" class="largetextbox">
+            <label for="height">Height</label><br/>
         </div>
-        <div id="dd">
-            <input type="text" name="latdd" id="latdd"/>
-            <label for="latdd">Latitude</label><br/>
-            <input type="text" name="lngdd" id="lngdd"/>
-            <label for="lngdd">Longitude</label><br/>
+        <div id="file">
+            <input type="file" name="path" id="path">
+            <label for="file">Select CSV File</label>
         </div>
-        <div id="dms">
-            <input type="text" name="latd" id="latd"/>
-            <input type="text" name="latm" id="latm"/>
-            <input type="text" name="lats" id="lats"/>
-            <label for="lats">Latitude</label><br/>
-            <input type="text" name="lngd" id="lngd"/>
-            <input type="text" name="lngm" id="lngm"/>
-            <input type="text" name="lngs" id="lngs"/>
-            <label for="lngs">Longitude</label><br/>
-        </div>
+        <input type="checkbox" name="convert" id="convert">
+        <label for="convert">Use Experimental Converter?</label><br/>
+        <input type="checkbox" name="usefile" id="usefile">
+        <label for="usefile">Input File?</label><br/>
+        <input type="submit" value="Convert"/>
 
-        <input type="text" name="height" id="height">
-        <label for="height">Height</label><br/>
-    </div>
-    <div id="file">
-        <input type="file" name="path" id="path">
-        <label for="file">Select CSV File</label>
-    </div>
-    <input type="checkbox" name="convert" id="convert">
-    <label for="convert">Use Experimental Converter?</label><br/>
-    <input type="checkbox" name="usefile" id="usefile">
-    <label for="usefile">Input File?</label><br/>
-    <input type="submit" value="Convert"/>
+    </form>
 
-    <form/>
-    <div></div>
+</div>
+</body>
 
-
-    <script>
-        function updateUI() {
-            if ($('#system').val().match('NE')) {
-                $('#en').show()
-                $('#dd').hide();
-                $('#dms').hide();
-            } else if ($('#system').val().match('DD')) {
-                $('#en').hide()
-                $('#dd').show();
-                $('#dms').hide();
-            } else {
-                $('#en').hide()
-                $('#dd').hide();
-                $('#dms').show();
-            }
-            if ($('#usefile').is(':checked')) {
-                $('#file').show()
-                $('#userinput').hide()
-            } else {
-                $('#file').hide()
-                $('#userinput').show()
-            }
+<script>
+    function updateUI() {
+        if ($('#system').val().match('NE')) {
+            $('#en').show()
+            $('#dd').hide();
+            $('#dms').hide();
+        } else if ($('#system').val().match('DD')) {
+            $('#en').hide()
+            $('#dd').show();
+            $('#dms').hide();
+        } else {
+            $('#en').hide()
+            $('#dd').hide();
+            $('#dms').show();
         }
-        history.navigationMode = 'compatible';
-        $(document).ready(function () {
-            updateUI()
-        })
-        $("#system")
-                .change(function () {
+        if ($('#usefile').is(':checked')) {
+            $('#file').show()
+            $('#userinput').hide()
+        } else {
+            $('#file').hide()
+            $('#userinput').show()
+        }
+    }
+    history.navigationMode = 'compatible';
+    $(document).ready(function () {
+        updateUI()
+    })
+    $("#system")
+            .change(function () {
 
-                    $("select option:selected").each(function () {
-                        updateUI()
-                    });
-
-                })
-
-        $("#usefile")
-                .change(function () {
+                $("select option:selected").each(function () {
                     updateUI()
-                })
+                });
+
+            })
+
+    $("#usefile")
+            .change(function () {
+                updateUI()
+            })
 
 
-    </script>
+</script>

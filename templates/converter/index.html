@@ -3,58 +3,96 @@
 <h1>Transform Coordinates</h1>
 
 
-
-<form action="{% url 'converter:map' %}" method="post">
-{% csrf_token %}
-    <select name="system">
-        <option value="NE">Northings/Eastings</option>
+<form enctype="multipart/form-data" action="{% url 'converter:map' %}" method="post">
+    {% csrf_token %}
+    <select name="system" id="system">
+        <option value="NE">Eastings/Northings</option>
         <option value="DD">Decimal Degrees</option>
         <option value="DMS">Degree Minute Second</option>
-    </select><br/>
-    <input type="text" name="1" id="1"/>
-    <input type="text" name="2" id="2"/>
-    <input type="text" name="3" id="3"/>
-    <label for="1">Lat</label><br/>
-    <input type="text" name="4" id="4"/>
-    <input type="text" name="5" id="5"/>
-    <input type="text" name="6" id="6"/>
-    <label for="2">Long</label><br/>
+    </select>
+    <label for="system">Input System Used</label> <br/>
+
+    <div id="userinput">
+        <div id="en">
+            <input type="text" name="east" id="east"/>
+            <label for="east">Easting</label><br/>
+            <input type="text" name="north" id="north"/>
+            <label for="north">Northing</label><br/>
+        </div>
+        <div id="dd">
+            <input type="text" name="latdd" id="latdd"/>
+            <label for="latdd">Latitude</label><br/>
+            <input type="text" name="lngdd" id="lngdd"/>
+            <label for="lngdd">Longitude</label><br/>
+        </div>
+        <div id="dms">
+            <input type="text" name="latd" id="latd"/>
+            <input type="text" name="latm" id="latm"/>
+            <input type="text" name="lats" id="lats"/>
+            <label for="lats">Latitude</label><br/>
+            <input type="text" name="lngd" id="lngd"/>
+            <input type="text" name="lngm" id="lngm"/>
+            <input type="text" name="lngs" id="lngs"/>
+            <label for="lngs">Longitude</label><br/>
+        </div>
+
+        <input type="text" name="height" id="height">
+        <label for="height">Height</label><br/>
+    </div>
+    <div id="file">
+        <input type="file" name="path" id="path">
+        <label for="file">Select CSV File</label>
+    </div>
+    <input type="checkbox" name="convert" id="convert">
+    <label for="convert">Use Experimental Converter?</label><br/>
+    <input type="checkbox" name="usefile" id="usefile">
+    <label for="usefile">Input File?</label><br/>
     <input type="submit" value="Convert"/>
-<form/>
-<div></div>
+
+    <form/>
+    <div></div>
 
 
- <script>
-$( "select" )
-  .change(function () {
-    var str1 = "";
-    var str2 = "";
-    $( "select option:selected" ).each(function() {
-        if($(this).val().match('NE') || $(this).val().match('DD')){
-            $('#2').hide();
-            $('#3').hide();
-            $('#5').hide();
-            $('#6').hide();
-            if($(this).val().match('NE')){
-                str1 += "Nothings" + " ";
-                str2 += "Eastings" + " ";
+    <script>
+        function updateUI() {
+            if ($('#system').val().match('NE')) {
+                $('#en').show()
+                $('#dd').hide();
+                $('#dms').hide();
+            } else if ($('#system').val().match('DD')) {
+                $('#en').hide()
+                $('#dd').show();
+                $('#dms').hide();
             } else {
-                str1 += "Latitude" + " ";
-                str2 += "Longitude" + " ";
+                $('#en').hide()
+                $('#dd').hide();
+                $('#dms').show();
             }
-        } else {
-            $('#2').show();
-            $('#3').show();
-            $('#5').show();
-            $('#6').show();
-            str1 += "Latitude" + " ";
-            str2 += "Longitude" + " ";
+            if ($('#usefile').is(':checked')) {
+                $('#file').show()
+                $('#userinput').hide()
+            } else {
+                $('#file').hide()
+                $('#userinput').show()
+            }
         }
-        //str += $( this ).text() + " ";
-    });
-    $( "label[for=1]" ).text( str1 );
-    $( "label[for=2]" ).text( str2 );
+        history.navigationMode = 'compatible';
+        $(document).ready(function () {
+            updateUI()
+        })
+        $("#system")
+                .change(function () {
 
-  })
-  .change();
-</script>
+                    $("select option:selected").each(function () {
+                        updateUI()
+                    });
+
+                })
+
+        $("#usefile")
+                .change(function () {
+                    updateUI()
+                })
+
+
+    </script>

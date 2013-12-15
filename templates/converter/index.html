@@ -43,29 +43,29 @@
 
         <div id="userinput">
             <div id="en">
-                <input type="text" name="east" id="east" class="largetextbox"/>
+                <input type="number" min="0" max="700000" step="0.001" name="east" id="east" class="largetextbox"/>
                 <label for="east">Easting</label><br/>
-                <input type="text" name="north" id="north" class="largetextbox"/>
+                <input type="number" min="0" max="1250000" step="0.001" name="north" id="north" class="largetextbox"/>
                 <label for="north">Northing</label><br/>
             </div>
             <div id="dd">
-                <input type="text" name="latdd" id="latdd" class="largetextbox"/>
+                <input type="number" min="-90" max="90" step="0.00000000001" name="latdd" id="latdd" class="largetextbox"/>
                 <label for="latdd">Latitude</label><br/>
-                <input type="text" name="lngdd" id="lngdd" class="largetextbox"/>
+                <input type="number" min="-180" max="180" step="0.00000000001" name="lngdd" id="lngdd" class="largetextbox"/>
                 <label for="lngdd">Longitude</label><br/>
             </div>
             <div id="dms">
-                <input type="text" name="latd" id="latd" class="smalltextbox"/>
-                <input type="text" name="latm" id="latm" class="smalltextbox"/>
-                <input type="text" name="lats" id="lats" class="normaltextbox"/>
+                <input type="number" min="-90" max="90" step="1" name="latd" id="latd" class="smalltextbox"/>
+                <input type="number" min="0" max="60" step="1" name="latm" id="latm" class="smalltextbox"/>
+                <input type="number" min="0" max="60" step="0.000001" name="lats" id="lats" class="normaltextbox"/>
                 <label for="lats">Latitude</label><br/>
-                <input type="text" name="lngd" id="lngd" class="smalltextbox"/>
-                <input type="text" name="lngm" id="lngm" class="smalltextbox"/>
-                <input type="text" name="lngs" id="lngs" class="normaltextbox"/>
+                <input type="number" min="-180" max="180" step="1" name="lngd" id="lngd" class="smalltextbox"/>
+                <input type="number" min="0" max="60" step="1" name="lngm" id="lngm" class="smalltextbox"/>
+                <input type="number" min="0" max="60" step="0.000001" name="lngs" id="lngs" class="normaltextbox"/>
                 <label for="lngs">Longitude</label><br/>
             </div>
 
-            <input type="text" name="height" id="height" class="largetextbox">
+            <input type="number" min="0" max="2500" step="0.001" name="height" id="height" class="largetextbox">
             <label for="height">Height</label><br/>
         </div>
         <div id="file">

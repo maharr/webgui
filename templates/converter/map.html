@@ -30,13 +30,39 @@
             };
             var map = new google.maps.Map(document.getElementById("map-canvas"),
                     mapOptions);
+            {% load staticfiles %}
+
+            var markerImage = new google.maps.MarkerImage('{% static "converter/target.png" %}',
+                new google.maps.Size(36, 36),
+                new google.maps.Point(0, 0),
+                new google.maps.Point(18, 18)
+            );
+
             {% for lat,long,label in lat_and_long_label %}
             var marker = new google.maps.Marker({
                 position: new google.maps.LatLng({{ lat }}, {{ long }}),
+                icon: markerImage,
                 map: map,
                 title: '{{ label }}'
             });
             {% endfor %}
+
+            var lineCoordiantes = [
+            {% for lat,long,label in lat_and_long_label %}
+            new google.maps.LatLng({{ lat }}, {{ long }}),
+            {% endfor %}
+            ];
+
+
+            var line = new google.maps.Polyline({
+                path: lineCoordiantes,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            })
+        
+            line.setMap(map);
         }
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>
@@ -45,6 +71,7 @@
 <div id="map-canvas"/>
 </body>
 </html>
+
 {{ system }}
 
 

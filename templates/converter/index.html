@@ -32,7 +32,7 @@
     <h1>Transform Coordinates</h1>
 
 
-    <form enctype="multipart/form-data" action="{% url 'converter:map' %}" method="post">
+    <form enctype="multipart/form-data" action="{% url 'converter:process' %}" method="post">
         {% csrf_token %}
         <select name="system" id="system">
             <option value="NE">Eastings/Northings</option>

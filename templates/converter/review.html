@@ -1,0 +1,10 @@
+<h1>{{ survey.name }}</h1>
+
+<ul>
+{% for point in points %}
+    <li>{{ point.label }} -- {{ point.input_type }}</li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'converter:gmap' survey.id %}">View on Google Maps?</a></br>
+<a href="{% url 'converter:bmap' survey.id %}">View on Bing Maps?</a>

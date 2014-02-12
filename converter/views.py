@@ -1,10 +1,12 @@
 # Create your views here.
 import csv
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import loader, RequestContext
+from converter.models import Survey, Points
 import numpy
+from django.core.urlresolvers import reverse
 
 from transformation.transformation.OSTN02 import webgui_convert
 
@@ -35,7 +37,7 @@ def index(request):
     return render(request, 'converter/index.html')
 
 
-def map(request):
+def process(request):
     system = request.POST['system']
     convert = False
     totalrows = 1
@@ -44,18 +46,23 @@ def map(request):
     if "usefile" in request.POST.keys():
         points, totalrows, label = handle_uploaded_file(request.FILES['path'])
         print(points)
-        lat = numpy.zeros(totalrows)
-        lng = numpy.zeros(totalrows)
-        height = numpy.zeros(totalrows)
+        OSGBe = numpy.zeros(totalrows)
+        OSGBn = numpy.zeros(totalrows)
+        OSGBh = numpy.zeros(totalrows)
+        ETRS89lat = numpy.zeros(totalrows)
+        ETRS89lng = numpy.zeros(totalrows)
+        ETRS89h = numpy.zeros(totalrows)
+        input_type = []
         for i in range(0, totalrows, 1):
-            lat[i], lng[i], height[i] = webgui_convert(points[i][0], points[i][1], points[i][2], convert)
-        print(lat, lng, height)
-        print(zip(lat, lng, label))
+            OSGBe[i], OSGBn[i], OSGBh[i] = points[i][0], points[i][1], points[i][2]
+            input_type.append('OSGB')
+            ETRS89lat[i], ETRS89lng[i], ETRS89h[i] = webgui_convert(points[i][0], points[i][1], points[i][2], convert)
+            data = zip(label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, input_type)
+            print(data)
     else:
         lat = numpy.zeros(1)
         lng = numpy.zeros(1)
         height = numpy.zeros(1)
-        label = 'Point'
         if system == 'NE':
             lat[0], lng[0], height[0] = webgui_convert(float(request.POST['east']), float(request.POST['north']),
                                                        float(request.POST['height']), convert)
@@ -72,10 +79,39 @@ def map(request):
             lng[0] = float(request.POST['lngdd'])
             height[0] = float(request.POST['height'])
 
-    template = loader.get_template('converter/map.html')
-    context = RequestContext(request,
-                             {'latlist': lat, 'longlist': lng, 'system': system, 'totalrows': xrange(totalrows),
-                              'lat_and_long_label': zip(lat, lng, label)})
-    return HttpResponse(template.render(context))
+    s = Survey(name='Test')
+    s.save()
+    print(s.pk)
+    for label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, input_type in data:
+        p = Points(survey=s, label=label, OSGBe=OSGBe, OSGBn=OSGBn, OSGBh=OSGBh, ETRS89lat=ETRS89lat, ETRS89lng=ETRS89lng, ETRS89h=ETRS89h, group=15, input_type=input_type)
+        p.save()
+        print(p.pk)
+    return HttpResponseRedirect(reverse('converter:review', args=(s.id,)))
 
 
+def gmap(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+        points = Points.objects.filter(survey=survey)
+
+    except Survey.DoesNotExist:
+        raise Http404
+    return render(request, 'converter/gmap.html', {'survey': survey, 'points': points})
+
+def bmap(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+        points = Points.objects.filter(survey=survey)
+
+    except Survey.DoesNotExist:
+        raise Http404
+    return render(request, 'converter/bmap.html', {'survey': survey, 'points': points})
+
+def review(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+        points = Points.objects.filter(survey=survey)
+        #print(points)
+    except Survey.DoesNotExist:
+        raise Http404
+    return render(request, 'converter/review.html', {'survey': survey, 'points': points})

@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <style type="text/css">
+        html {
+            height: 100%
+        }
+
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0
+        }
+
+        #mapDiv {
+            height: 100%
+        }
+    </style>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+
+    <script type="text/javascript">
+        function GetMap() {
+
+            var map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
+                    {credentials: "AlSJP5QjV5T4SERHq84m_c4BIlOcPiOXLb1o3tFgF1wJuFmoXlMuxDgGZB3fZmGl",
+                        center: new Microsoft.Maps.Location({{ points.0.ETRS89lat }}, {{ points.0.ETRS89lng }}),
+                        mapTypeId: Microsoft.Maps.MapTypeId.aerial,
+                        zoom: 19});
+            {% load staticfiles %}
+            {% for point in points %}
+                var loc = new Microsoft.Maps.Location({{ point.ETRS89lat }}, {{ point.ETRS89lng }});
+
+
+                var pin = new Microsoft.Maps.Pushpin(loc, {icon: '{% static "converter/target.png" %}', width: 36, height: 36, anchor: new
+                        Microsoft.Maps.Point(18, 18), draggable: false});
+
+                map.entities.push(pin);
+
+            {% endfor %}
+
+            var lineCoordinates = [
+            {% for point in points %}
+            new Microsoft.Maps.Location({{ point.ETRS89lat }}, {{ point.ETRS89lng }}),
+            {% endfor %}
+            ];
+
+            var line = new Microsoft.Maps.Polyline(lineCoordinates,{strokeColor:new Microsoft.Maps.Color(255, 255, 0, 0), strokeThickness:2});
+
+            // Add the polyline to the map
+            map.entities.push(line);
+
+        }
+    </script>
+</head>
+<body onload="GetMap();">
+<div id='mapDiv'/>
+</body>
+</html>

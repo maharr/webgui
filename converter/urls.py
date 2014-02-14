@@ -7,5 +7,6 @@ urlpatterns = patterns('',
     url(r'^process/$', views.process, name='process'),
     url(r'^(?P<survey_id>\d+)/review/$', views.review, name='review'),
     url(r'^(?P<survey_id>\d+)/gmaps/$', views.gmap, name='gmap'),
-    url(r'^(?P<survey_id>\d+)/bmaps/$', views.bmap, name='bmap')
+    url(r'^(?P<survey_id>\d+)/bmaps/$', views.bmap, name='bmap'),
+    url(r'^(?P<survey_id>\d+)/ostreetmap/$', views.ostreetmap, name='ostreetmap')
 )

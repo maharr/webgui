@@ -1,10 +1,11 @@
 <h1>{{ survey.name }}</h1>
 
-<ul>
-{% for point in points %}
-    <li>{{ point.label }} -- {{ point.input_type }}</li>
+
+{% for group in groups %}
+    <h1>Group {{ group.pk }}</h1> -- Colour <input type="text" value="{{ group.colour }}">{{ group.colour }} -- <select name="type"> <option value="PL"{% if group.type == 'PL' %} selected="selected"{% endif %}>PolyLine</option><option value="PG"{% if group.type == 'PG' %} selected="selected"{% endif %}>Polygon</option></select></br>
 {% endfor %}
-</ul>
+
 
 <a href="{% url 'converter:gmap' survey.id %}">View on Google Maps?</a></br>
-<a href="{% url 'converter:bmap' survey.id %}">View on Bing Maps?</a>
+<a href="{% url 'converter:bmap' survey.id %}">View on Bing Maps?</a></br>
+<a href="{% url 'converter:ostreetmap' survey.id %}">View on Open Streetmap?</a>

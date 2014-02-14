@@ -4,9 +4,10 @@ import csv
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import loader, RequestContext
-from converter.models import Survey, Points
+from converter.models import Survey, Points, Groups
 import numpy
 from django.core.urlresolvers import reverse
+from django.db.models import Max
 
 from transformation.transformation.OSTN02 import webgui_convert
 
@@ -41,6 +42,9 @@ def process(request):
     system = request.POST['system']
     convert = False
     totalrows = 1
+    s = Survey(name='Test')
+    s.save()
+    print(s.pk)
     if "convert" in request.POST.keys():
         convert = True
     if "usefile" in request.POST.keys():
@@ -53,12 +57,27 @@ def process(request):
         ETRS89lng = numpy.zeros(totalrows)
         ETRS89h = numpy.zeros(totalrows)
         input_type = []
+        group = []
         for i in range(0, totalrows, 1):
+            if i==0:
+                g = Groups(survey=s, colour='FF0000', type='PL')
+                print('initial')
+                g.save()
+                group.append(g.pk)
+            else:
+                if (int(label[i-1][-1:]) == int(label[i][-1:]) - 1) or (int(label[i-1][-1:]) == int(label[i][-1:]) + 9):
+                    group.append(g.pk)
+                    print('same, do nothing')
+                else:
+                    g = Groups(survey=s, colour='FF0000', type='PL')
+                    g.save()
+                    group.append(g.pk)
+                    print('change')
             OSGBe[i], OSGBn[i], OSGBh[i] = points[i][0], points[i][1], points[i][2]
             input_type.append('OSGB')
             ETRS89lat[i], ETRS89lng[i], ETRS89h[i] = webgui_convert(points[i][0], points[i][1], points[i][2], convert)
-            data = zip(label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, input_type)
-            print(data)
+        data = zip(label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, group, input_type)
+        print(data)
     else:
         lat = numpy.zeros(1)
         lng = numpy.zeros(1)
@@ -79,11 +98,9 @@ def process(request):
             lng[0] = float(request.POST['lngdd'])
             height[0] = float(request.POST['height'])
 
-    s = Survey(name='Test')
-    s.save()
-    print(s.pk)
-    for label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, input_type in data:
-        p = Points(survey=s, label=label, OSGBe=OSGBe, OSGBn=OSGBn, OSGBh=OSGBh, ETRS89lat=ETRS89lat, ETRS89lng=ETRS89lng, ETRS89h=ETRS89h, group=15, input_type=input_type)
+
+    for label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, group, input_type in data:
+        p = Points(survey=s, label=label, OSGBe=OSGBe, OSGBn=OSGBn, OSGBh=OSGBh, ETRS89lat=ETRS89lat, ETRS89lng=ETRS89lng, ETRS89h=ETRS89h, group=Groups.objects.get(pk=group), input_type=input_type)
         p.save()
         print(p.pk)
     return HttpResponseRedirect(reverse('converter:review', args=(s.id,)))
@@ -93,10 +110,11 @@ def gmap(request, survey_id):
     try:
         survey = Survey.objects.get(pk=survey_id)
         points = Points.objects.filter(survey=survey)
+        groups = Groups.objects.filter(survey=survey)
 
     except Survey.DoesNotExist:
         raise Http404
-    return render(request, 'converter/gmap.html', {'survey': survey, 'points': points})
+    return render(request, 'converter/gmap.html', {'survey': survey, 'points': points, 'groups': groups})
 
 def bmap(request, survey_id):
     try:
@@ -107,11 +125,21 @@ def bmap(request, survey_id):
         raise Http404
     return render(request, 'converter/bmap.html', {'survey': survey, 'points': points})
 
+def ostreetmap(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+        points = Points.objects.filter(survey=survey)
+
+    except Survey.DoesNotExist:
+        raise Http404
+    return render(request, 'converter/ostreetmap.html', {'survey': survey, 'points': points})
+
 def review(request, survey_id):
     try:
         survey = Survey.objects.get(pk=survey_id)
         points = Points.objects.filter(survey=survey)
-        #print(points)
+        groups = Groups.objects.filter(survey=survey)
+
     except Survey.DoesNotExist:
         raise Http404
-    return render(request, 'converter/review.html', {'survey': survey, 'points': points})
+    return render(request, 'converter/review.html', {'survey': survey, 'points': points, 'groups': groups})

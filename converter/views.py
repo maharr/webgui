@@ -1,14 +1,12 @@
 # Create your views here.
 import csv
 
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
-from django.template import loader, RequestContext
-from converter.models import Survey, Points, Groups
 import numpy
 from django.core.urlresolvers import reverse
-from django.db.models import Max
 
+from converter.models import Survey, Points, Groups
 from transformation.transformation.OSTN02 import webgui_convert
 
 
@@ -28,6 +26,7 @@ def handle_uploaded_file(f):
         i += 1
 
     return points, totalrows, label
+
 
 #with open('c:\users\matt\projects\webgui\data.txt', 'wb+') as destination:
 #  for chunk in f.chunks():
@@ -59,13 +58,14 @@ def process(request):
         input_type = []
         group = []
         for i in range(0, totalrows, 1):
-            if i==0:
+            if i == 0:
                 g = Groups(survey=s, colour='FF0000', type='PL')
                 print('initial')
                 g.save()
                 group.append(g.pk)
             else:
-                if (int(label[i-1][-1:]) == int(label[i][-1:]) - 1) or (int(label[i-1][-1:]) == int(label[i][-1:]) + 9):
+                if (int(label[i - 1][-1:]) == int(label[i][-1:]) - 1) or (
+                            int(label[i - 1][-1:]) == int(label[i][-1:]) + 9):
                     group.append(g.pk)
                     print('same, do nothing')
                 else:
@@ -98,9 +98,9 @@ def process(request):
             lng[0] = float(request.POST['lngdd'])
             height[0] = float(request.POST['height'])
 
-
     for label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, group, input_type in data:
-        p = Points(survey=s, label=label, OSGBe=OSGBe, OSGBn=OSGBn, OSGBh=OSGBh, ETRS89lat=ETRS89lat, ETRS89lng=ETRS89lng, ETRS89h=ETRS89h, group=Groups.objects.get(pk=group), input_type=input_type)
+        p = Points(survey=s, label=label, OSGBe=OSGBe, OSGBn=OSGBn, OSGBh=OSGBh, ETRS89lat=ETRS89lat,
+                   ETRS89lng=ETRS89lng, ETRS89h=ETRS89h, group=Groups.objects.get(pk=group), input_type=input_type)
         p.save()
         print(p.pk)
     return HttpResponseRedirect(reverse('converter:review', args=(s.id,)))
@@ -116,23 +116,39 @@ def gmap(request, survey_id):
         raise Http404
     return render(request, 'converter/gmap.html', {'survey': survey, 'points': points, 'groups': groups})
 
+
 def bmap(request, survey_id):
     try:
         survey = Survey.objects.get(pk=survey_id)
         points = Points.objects.filter(survey=survey)
+        groups = Groups.objects.filter(survey=survey)
 
     except Survey.DoesNotExist:
         raise Http404
-    return render(request, 'converter/bmap.html', {'survey': survey, 'points': points})
+    return render(request, 'converter/bmap.html', {'survey': survey, 'points': points, 'groups': groups})
+
 
 def ostreetmap(request, survey_id):
     try:
         survey = Survey.objects.get(pk=survey_id)
         points = Points.objects.filter(survey=survey)
+        groups = Groups.objects.filter(survey=survey)
 
     except Survey.DoesNotExist:
         raise Http404
-    return render(request, 'converter/ostreetmap.html', {'survey': survey, 'points': points})
+    return render(request, 'converter/ostreetmap.html', {'survey': survey, 'points': points, 'groups': groups})
+
+
+def OSmap(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+        points = Points.objects.filter(survey=survey)
+        groups = Groups.objects.filter(survey=survey)
+
+    except Survey.DoesNotExist:
+        raise Http404
+    return render(request, 'converter/OS.html', {'survey': survey, 'points': points, 'groups': groups})
+
 
 def review(request, survey_id):
     try:
@@ -143,3 +159,14 @@ def review(request, survey_id):
     except Survey.DoesNotExist:
         raise Http404
     return render(request, 'converter/review.html', {'survey': survey, 'points': points, 'groups': groups})
+
+def update_group(request):
+    try:
+        print('Hello')
+        group = Groups.objects.get(pk=request.POST['group_id'])
+        group.type = request.POST['type']
+        group.colour = request.POST['colour']
+        group.save()
+    except Groups.DoesNotExist:
+        raise Http404
+    return render(request, 'converter/group_update.html')

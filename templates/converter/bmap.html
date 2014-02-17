@@ -2,6 +2,7 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+    <title>Survey {{ survey.name }} on Bing Maps</title>
     <style type="text/css">
         html {
             height: 100%
@@ -42,16 +43,22 @@
 
             {% endfor %}
 
-            var lineCoordinates = [
-            {% for point in points %}
-            new Microsoft.Maps.Location({{ point.ETRS89lat }}, {{ point.ETRS89lng }}),
-            {% endfor %}
-            ];
+            {% for group in groups %}
+                var lineCoordiantes{{ forloop.counter }} = [
+                    {% for point in points %}
+                        {% if point.group == group %}
+                            new Microsoft.Maps.Location({{ point.ETRS89lat }}, {{ point.ETRS89lng }}),
+                        {% endif %}
+                    {% endfor   %}
+                ];
 
-            var line = new Microsoft.Maps.Polyline(lineCoordinates,{strokeColor:new Microsoft.Maps.Color(255, 255, 0, 0), strokeThickness:2});
+                var line{{ forloop.counter }} = new Microsoft.Maps.{% if group.type == 'PL' %}Polyline{% else %}Polygon{% endif %}(lineCoordiantes{{ forloop.counter }}, {fillColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeThickness: 2});
 
             // Add the polyline to the map
-            map.entities.push(line);
+            map.entities.push(line{{ forloop.counter }});
+            {% endfor %}
+
+
 
         }
     </script>

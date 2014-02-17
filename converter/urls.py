@@ -8,5 +8,7 @@ urlpatterns = patterns('',
     url(r'^(?P<survey_id>\d+)/review/$', views.review, name='review'),
     url(r'^(?P<survey_id>\d+)/gmaps/$', views.gmap, name='gmap'),
     url(r'^(?P<survey_id>\d+)/bmaps/$', views.bmap, name='bmap'),
-    url(r'^(?P<survey_id>\d+)/ostreetmap/$', views.ostreetmap, name='ostreetmap')
+    url(r'^(?P<survey_id>\d+)/ostreetmap/$', views.ostreetmap, name='ostreetmap'),
+    url(r'^(?P<survey_id>\d+)/OSmap/$', views.OSmap, name='OSmap'),
+    url(r'^update/$', views.update_group, name='update_group')
 )

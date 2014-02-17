@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Survey {{ survey.name }} on Ordnance Survey Map</title>
+
+    <!-- Remember to insert your own API key in the URL below -->
+
+    <script type="text/javascript"
+            src="http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=EA4A2D87E8C473D6E0430B6CA40A9AB7"></script>
+    <script>
+        // Define the osMap variable
+
+        var osMap;
+
+        // This function creates the map and is called by the div in the HTML
+
+        function init() {
+
+// Create new map
+
+            osMap = new OpenSpace.Map('map');
+
+// Set map centre in National Grid Eastings and Northings and select zoom level 3
+
+            osMap.setCenter(new OpenSpace.MapPoint({{ points.0.OSGBe }}, {{ points.0.OSGBn }}), 20);
+
+// Creating the variables to hold the custom marker and then loading it
+            {% load staticfiles %}
+            var size = new OpenLayers.Size(36, 36);
+            var offset = new OpenLayers.Pixel(18, 18);
+            var icon = new OpenSpace.Icon('{% static "converter/target.png" %}', size, offset);
+
+// Creating a postion for the marker and then adding it
+            {% for point in points %}
+            var pos = new OpenSpace.MapPoint({{ point.OSGBe }}, {{ point.OSGBn }});
+            osMap.createMarker(pos, icon);
+            {% endfor %}
+
+
+            clusterControl = new OpenSpace.Control.ClusterManager();
+            osMap.addControl(clusterControl);
+            clusterControl.activate();}
+    </script>
+
+    <!-- If you use OS OpenSpace Pro or OS OnDemand WMTS then use the relevant following URL instead:
+
+    OS OpenSpace Pro - <script type="text/javascript" src="http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=INSERT_YOUR_API_KEY_HERE"></script>
+
+    OS OnDemand WMTS - <script type="text/javascript" src="http://ondemandapi.ordnancesurvey.co.uk/osmapapi/openspace.js??key=INSERT_YOUR_API_KEY_HERE"></script>
+
+    -->
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #map {
+            height: 100%;
+        }
+    </style>
+
+</head>
+
+<body onload="init()">
+
+
+<!-- The div below holds the map -->
+
+<div id="map"></div>
+
+</body>
+</html>

@@ -1,11 +1,120 @@
-<h1>{{ survey.name }}</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    {% load staticfiles %}
+    <title>Review {{ survey.name }}</title>
+    <script type="text/javascript" src="{% static "converter/jscolor.js" %}"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <style type="text/css">
+        .container {
+            font-family: 'Arial';
+            background-color: #c6f0fb;
+            width: 400px;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            padding: 5px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+        }
+
+        .title {
+            font-family: 'Arial';
+            background-color: #c6f0fb;
+            width: 400px;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            padding: 15px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 70px;
+
+        }
+
+        .smalltextbox {
+            width: 50px;
+        }
+
+        .normaltextbox {
+            width: 80px;
+        }
+
+        .largetextbox {
+            width: 100px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<h1 class="title">{{ survey.name }}</h1>
 
 
 {% for group in groups %}
-    <h1>Group {{ group.pk }}</h1> -- Colour <input type="text" value="{{ group.colour }}">{{ group.colour }} -- <select name="type"> <option value="PL"{% if group.type == 'PL' %} selected="selected"{% endif %}>PolyLine</option><option value="PG"{% if group.type == 'PG' %} selected="selected"{% endif %}>Polygon</option></select></br>
+    <div class="container">
+        <form enctype="multipart/form-data" action="{% url 'converter:update_group' %}" method="post"
+              id="group{{ forloop.counter }}">
+            {% csrf_token %}
+            <h4>Group {{ group.pk }}</h4>
+            <input type="hidden" name="group_id" value="{{ group.pk }}">
+            <input type="text" class="color" value="{{ group.colour }}" id="colour"
+                   name="colour">
+            <label for="colour">Colour</label>
+
+            <select name="type" id="type">
+                <option value="PL"{% if group.type == 'PL' %} selected="selected"{% endif %}>PolyLine</option>
+                <option value="PG"{% if group.type == 'PG' %} selected="selected"{% endif %}>Polygon</option>
+            </select>
+            <label for="type">Line Type</label></br>
+            <input type="submit" value="Update" id="button{{ forloop.counter }}">
+        </form>
+        <div id="result{{ forloop.counter }}"></div>
+    </div>
 {% endfor %}
 
+<div class="container">
+    <button type="button" onclick="location.href='{% url 'converter:gmap' survey.id %}'">Google Maps</button>
+    <button type="button" onclick="location.href='{% url 'converter:bmap' survey.id %}'">Bing Maps</button>
+    </br>
+    <button type="button" onclick="location.href='{% url 'converter:ostreetmap' survey.id %}'">Open Streetmaps</button>
+    <button type="button" onclick="location.href='{% url 'converter:OSmap' survey.id %}'">OS Maps</button>
+</div>
 
-<a href="{% url 'converter:gmap' survey.id %}">View on Google Maps?</a></br>
-<a href="{% url 'converter:bmap' survey.id %}">View on Bing Maps?</a></br>
-<a href="{% url 'converter:ostreetmap' survey.id %}">View on Open Streetmap?</a>
+<script>
+
+    $(document).ajaxComplete(function () {
+        {% for group in groups %}
+            $("#result{{ forloop.counter }}").delay(4000).hide(10);
+        {% endfor %}
+    });
+    {% for group in groups %}
+
+
+
+        $("#group{{ forloop.counter }}").submit(function (event) {
+
+            // Stop form from submitting normally
+            event.preventDefault();
+
+            // Get some values from elements on the page:
+            var $form = $(this),
+                    group_id = $form.find("input[name='group_id']").val(),
+                    colour = $form.find("input[name='colour']").val(),
+                    type = $form.find("select[name='type']").val(),
+                    url = $form.attr("action");
+
+            // Send the data using post
+            var posting = $.post(url, { csrfmiddlewaretoken: '{{ csrf_token }}', group_id: group_id, colour: colour, type: type });
+
+            // Put the results in a div
+            posting.done(function (data) {
+                $("#result{{ forloop.counter }}").show();
+                $("#result{{ forloop.counter }}").empty().append(data);
+            });
+        });
+
+    {% endfor %}
+</script>
+</body>
+</html>

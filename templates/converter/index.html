@@ -1,32 +1,37 @@
-<link rel="stylesheet" href="http://formalize.me/assets/css/demo.css" />
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://formalize.me/assets/js/jquery.formalize.js"></script>
-<style type="text/css">
-    .container {
-        font-family: 'Arial';
-        background-color: #c6f0fb;
-        width: 400px;
-        border: 1px solid #000;
-        border-radius: 10px;
-        padding: 15px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 70px;
-    }
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Surveyplot - Transform and display Coordinates</title>
+    <link rel="stylesheet" href="http://formalize.me/assets/css/demo.css"/>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://formalize.me/assets/js/jquery.formalize.js"></script>
+    <style type="text/css">
+        .container {
+            font-family: 'Arial';
+            background-color: #c6f0fb;
+            width: 400px;
+            border: 1px solid #000;
+            border-radius: 10px;
+            padding: 15px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 70px;
+        }
 
-    .smalltextbox {
-        width:50px;
-    }
+        .smalltextbox {
+            width: 50px;
+        }
 
-    .normaltextbox {
-        width:80px;
-    }
+        .normaltextbox {
+            width: 80px;
+        }
 
-    .largetextbox {
-        width: 100px;
-    }
+        .largetextbox {
+            width: 100px;
+        }
 
-</style>
+    </style>
+</head>
 <body>
 <div class="container">
     <h1>Transform Coordinates</h1>
@@ -49,9 +54,11 @@
                 <label for="north">Northing</label><br/>
             </div>
             <div id="dd">
-                <input type="number" min="-90" max="90" step="0.00000000001" name="latdd" id="latdd" class="largetextbox"/>
+                <input type="number" min="-90" max="90" step="0.00000000001" name="latdd" id="latdd"
+                       class="largetextbox"/>
                 <label for="latdd">Latitude</label><br/>
-                <input type="number" min="-180" max="180" step="0.00000000001" name="lngdd" id="lngdd" class="largetextbox"/>
+                <input type="number" min="-180" max="180" step="0.00000000001" name="lngdd" id="lngdd"
+                       class="largetextbox"/>
                 <label for="lngdd">Longitude</label><br/>
             </div>
             <div id="dms">
@@ -126,3 +133,4 @@
 
 
 </script>
+</html>

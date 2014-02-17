@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {% load staticfiles %}
+    <title>Survey {{ survey.name }} on Google Maps</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+
     <style type="text/css">
         html {
             height: 100%
@@ -50,11 +53,11 @@
 
             {% for group in groups %}
                 var lineCoordiantes = [
-                {% for point in points %}
-                    {% if point.group == group %}
-                    new google.maps.LatLng({{ point.ETRS89lat }}, {{ point.ETRS89lng }}),
-                    {% endif %}
-                {% endfor   %}
+                    {% for point in points %}
+                        {% if point.group == group %}
+                            new google.maps.LatLng({{ point.ETRS89lat }}, {{ point.ETRS89lng }}),
+                        {% endif %}
+                    {% endfor   %}
                 ];
                 var line = new google.maps.{% if group.type == 'PL' %}Polyline{% else %}Polygon{% endif %}({
                     path: lineCoordiantes,

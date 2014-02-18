@@ -56,7 +56,7 @@
         <form enctype="multipart/form-data" action="{% url 'converter:update_group' %}" method="post"
               id="group{{ forloop.counter }}">
             {% csrf_token %}
-            <h4>Group {{ group.pk }}</h4>
+            <h4>Group {{ forloop.counter }}</h4>
             <input type="hidden" name="group_id" value="{{ group.pk }}">
             <input type="text" class="color" value="{{ group.colour }}" id="colour"
                    name="colour">

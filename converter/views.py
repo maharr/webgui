@@ -5,8 +5,9 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 import numpy
 from django.core.urlresolvers import reverse
+
 from converter.models import Survey, Points, Groups
-from transformation.transformation.OSTN02 import webgui_convert
+from transformation.transformation.OSTN02 import webgui_convert, webgui_reverse
 
 
 #text/csv
@@ -82,24 +83,46 @@ def process(request):
         data = zip(label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, group, input_type)
         print(data)
     else:
-        lat = numpy.zeros(1)
-        lng = numpy.zeros(1)
-        height = numpy.zeros(1)
+        OSGBe = numpy.zeros(1)
+        OSGBn = numpy.zeros(1)
+        OSGBh = numpy.zeros(1)
+        ETRS89lat = numpy.zeros(1)
+        ETRS89lng = numpy.zeros(1)
+        ETRS89h = numpy.zeros(1)
+        input_type = []
+        group = []
+        label = 'Single Point'
+        g = Groups(survey=s, colour='FF0000', type='PL')
+        print('single')
+        g.save()
+        group.append(g.pk)
         if system == 'NE':
-            lat[0], lng[0], height[0] = webgui_convert(float(request.POST['east']), float(request.POST['north']),
-                                                       float(request.POST['height']), convert)
-            print(lat, lng, height)
+
+            OSGBe[0], OSGBn[0], OSGBh[0] = float(request.POST['east']), float(request.POST['north']), float(
+                request.POST['height'])
+            input_type.append('OSGB')
+            ETRS89lat[0], ETRS89lng[0], ETRS89h[0] = webgui_convert(float(request.POST['east']),
+                                                                    float(request.POST['north']),
+                                                                    float(request.POST['height']), convert)
+
         elif system == 'DMS':
-            lat[0] = float(request.POST['latd']) + (float(request.POST['latm']) / 60) + (
+            input_type.append('ETRS89')
+            ETRS89lat[0] = float(request.POST['latd']) + (float(request.POST['latm']) / 60) + (
                 float(request.POST['lats']) / 3600)
-            lng[0] = float(request.POST['lngd']) + (float(request.POST['lngm']) / 60) + (
+            ETRS89lng[0] = float(request.POST['lngd']) + (float(request.POST['lngm']) / 60) + (
                 float(request.POST['lngs']) / 3600)
-            height[0] = float(request.POST['height'])
+            ETRS89h[0] = float(request.POST['height'])
+            OSGBe[0], OSGBn[0], OSGBh[0] = webgui_reverse(ETRS89lat[0], ETRS89lng[0], ETRS89h[0])
 
         else:
-            lat[0] = float(request.POST['latdd'])
-            lng[0] = float(request.POST['lngdd'])
-            height[0] = float(request.POST['height'])
+            input_type.append('ETRS89')
+            ETRS89lat[0] = float(request.POST['latdd'])
+            ETRS89lng[0] = float(request.POST['lngdd'])
+            ETRS89h[0] = float(request.POST['height'])
+            OSGBe[0], OSGBn[0], OSGBh[0] = webgui_reverse(ETRS89lat[0], ETRS89lng[0], ETRS89h[0])
+
+        data = zip(label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, group, input_type)
+        print(data)
 
     for label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, group, input_type in data:
         p = Points(survey=s, label=label, OSGBe=OSGBe, OSGBn=OSGBn, OSGBh=OSGBh, ETRS89lat=ETRS89lat,

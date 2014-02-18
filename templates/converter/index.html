@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    {% load staticfiles %}
     <title>Surveyplot - Transform and display Coordinates</title>
     <link rel="stylesheet" href="http://formalize.me/assets/css/demo.css"/>
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
@@ -30,6 +32,13 @@
             width: 100px;
         }
 
+        .centre {
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 70px;
+            width: 150px;
+        }
+
     </style>
 </head>
 <body>
@@ -39,6 +48,7 @@
 
     <form enctype="multipart/form-data" action="{% url 'converter:process' %}" method="post">
         {% csrf_token %}
+        <input type="text" name="name" placeholder="Insert Name Here"></br>
         <select name="system" id="system">
             <option value="NE">Eastings/Northings</option>
             <option value="DD">Decimal Degrees</option>
@@ -76,17 +86,23 @@
             <label for="height">Height</label><br/>
         </div>
         <div id="file">
-            <input type="file" name="path" id="path">
+            <input type="file" name="path" id="path"
+                   accept=".csv">
             <label for="file">Select CSV File</label>
         </div>
         <input type="checkbox" name="convert" id="convert">
         <label for="convert">Use Experimental Converter?</label><br/>
         <input type="checkbox" name="usefile" id="usefile">
         <label for="usefile">Input File?</label><br/>
-        <input type="submit" value="Convert"/>
+        <input type="submit" value="Convert"/></br>
+
 
     </form>
 
+</div>
+<div class="centre">
+    <button type="button" onclick="location.href='{% static "converter/Field course test.csv" %}'">Download Test File
+    </button>
 </div>
 </body>
 

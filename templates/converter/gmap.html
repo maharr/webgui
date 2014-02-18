@@ -42,11 +42,21 @@
             );
 
             {% for point in points %}
-                var marker = new google.maps.Marker({
+                var contentString{{ forloop.counter }} = 'Point label: {{ point.label }} </br>' +
+                        'ETRS89:{{ point.ETRS89lng }}, {{ point.ETRS89lat }}, {{ point.ETRS89h }} </br>' +
+                        'OSGB36:{{ point.OSGBe }}, {{ point.OSGBn }}, {{ point.OSGBh }}</br></br>' +
+                        'Produced by surveyplot.co.uk'
+                var infowindow{{ forloop.counter }} = new google.maps.InfoWindow({
+                    content: contentString{{ forloop.counter }}
+                });
+                var marker{{ forloop.counter }} = new google.maps.Marker({
                     position: new google.maps.LatLng({{ point.ETRS89lat }}, {{ point.ETRS89lng }}),
                     icon: markerImage,
                     map: map,
                     title: '{{ point.label }}'
+                });
+                google.maps.event.addListener(marker{{ forloop.counter }}, 'click', function () {
+                    infowindow{{ forloop.counter }}.open(map, marker{{ forloop.counter }});
                 });
             {% endfor %}
 

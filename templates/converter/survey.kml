@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+        <name>{{ survey.name }}</name>
+        <description>Survey Data processed by surveyplot.co.uk</description>
+        {% for group in groups %}
+        <Style id="group{{ forloop.counter }}">
+            <LineStyle>
+                <color>7f{{ group.colour }}</color>
+                <width>4</width>
+            </LineStyle>
+            <PolyStyle>
+                <color>7f{{ group.colour }}</color>
+            </PolyStyle>
+        </Style>
+        {% endfor %}
+        <Folder>
+            <name>Points</name>
+            {% for point in points %}
+            <Placemark>
+                <name>Point {{ point.label }}</name>
+                <description>ETRS89:{{ point.ETRS89lng }}, {{ point.ETRS89lat }}, {{ point.ETRS89h }}
+                    OSGB36:{{ point.OSGBe }}, {{ point.OSGBn }}, {{ point.OSGBh }}
+
+                    Produced by surveyplot.co.uk
+                </description>
+                <Point>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <coordinates>{{ point.ETRS89lng }},{{ point.ETRS89lat }},{{ point.ETRS89h }}</coordinates>
+                </Point>
+            </Placemark>
+            {% endfor %}
+        </Folder>
+        <Folder>
+            <name>Groups</name>
+            {% for group in groups %}
+            <Placemark>
+                <name>Group {{ forloop.counter }}</name>
+                <visibility>0</visibility>
+                <description>Produced by surveyplot.co.uk</description>
+                <styleUrl>#group{{ forloop.counter }}</styleUrl>
+                <LookAt>
+                    <longitude>{{ points.0.ETRS89lng }}</longitude>
+                    <latitude>{{ points.0.ETRS89lat }}</latitude>
+                    <altitude>{{ points.0.ETRSh }}</altitude>
+                    <heading>0</heading>
+                    <tilt>45</tilt>
+                    <range>150</range>
+                </LookAt>
+                {% if group.type == 'PL' %}
+                <LineString>
+                    <tessellate>1</tessellate>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <coordinates>
+                        {% for point in points %}
+                        {% if point.group == group %}
+                        {{ point.ETRS89lng }},{{ point.ETRS89lat }},{{ point.ETRS89h }}
+                        {% endif %}
+                        {% endfor %}
+                    </coordinates>
+                </LineString>
+                {% else %}
+                <Polygon>
+                    <tessellate>1</tessellate>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>
+                                {% for point in points %}
+                                {% if point.group == group %}
+                                {{ point.ETRS89lng }},{{ point.ETRS89lat }},{{ point.ETRS89h }}
+                                {% endif %}
+                                {% endfor %}
+                            </coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+                {% endif %}
+            </Placemark>
+            {% endfor %}
+        </Folder>
+    </Document>
+</kml>

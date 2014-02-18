@@ -1,13 +1,16 @@
 # Create your views here.
 import csv
 
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 import numpy
 from django.core.urlresolvers import reverse
-
 from converter.models import Survey, Points, Groups
 from transformation.transformation.OSTN02 import webgui_convert
+
+
+#text/csv
+#application/vnd.ms-excel
 
 
 def handle_uploaded_file(f):
@@ -41,7 +44,7 @@ def process(request):
     system = request.POST['system']
     convert = False
     totalrows = 1
-    s = Survey(name='Test')
+    s = Survey(name=request.POST['name'])
     s.save()
     print(s.pk)
     if "convert" in request.POST.keys():
@@ -159,6 +162,22 @@ def review(request, survey_id):
     except Survey.DoesNotExist:
         raise Http404
     return render(request, 'converter/review.html', {'survey': survey, 'points': points, 'groups': groups})
+
+
+def kml(request, survey_id):
+    try:
+        survey = Survey.objects.get(pk=survey_id)
+        points = Points.objects.filter(survey=survey)
+        groups = Groups.objects.filter(survey=survey)
+        file = render(request, 'converter/survey.kml', {'survey': survey, 'points': points, 'groups': groups})
+        response = HttpResponse(file, content_type='application/vnd.google-earth.kml+xml')
+        response['Content-Length'] = len(response.content)
+        response['Content-Disposition'] = 'attachment; filename=%s.kml' % survey.name
+
+    except Survey.DoesNotExist:
+        raise Http404
+    return response
+
 
 def update_group(request):
     try:

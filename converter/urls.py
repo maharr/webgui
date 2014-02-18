@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     url(r'^(?P<survey_id>\d+)/bmaps/$', views.bmap, name='bmap'),
     url(r'^(?P<survey_id>\d+)/ostreetmap/$', views.ostreetmap, name='ostreetmap'),
     url(r'^(?P<survey_id>\d+)/OSmap/$', views.OSmap, name='OSmap'),
+    url(r'^(?P<survey_id>\d+)/kml/$', views.kml, name='kml'),
     url(r'^update/$', views.update_group, name='update_group')
 )

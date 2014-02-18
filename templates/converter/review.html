@@ -67,7 +67,7 @@
                 <option value="PG"{% if group.type == 'PG' %} selected="selected"{% endif %}>Polygon</option>
             </select>
             <label for="type">Line Type</label></br>
-            <input type="submit" value="Update" id="button{{ forloop.counter }}">
+            <input type="submit" value="Save" id="button{{ forloop.counter }}">
         </form>
         <div id="result{{ forloop.counter }}"></div>
     </div>
@@ -79,6 +79,7 @@
     </br>
     <button type="button" onclick="location.href='{% url 'converter:ostreetmap' survey.id %}'">Open Streetmaps</button>
     <button type="button" onclick="location.href='{% url 'converter:OSmap' survey.id %}'">OS Maps</button>
+    <button type="button" onclick="location.href='{% url 'converter:kml' survey.id %}'">KML Download</button>
 </div>
 
 <script>

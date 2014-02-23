@@ -39,7 +39,7 @@
                 var pin{{ forloop.counter }} = new Microsoft.Maps.Pushpin(loc{{ forloop.counter }}, {icon: '{% static "converter/target.png" %}', width: 36, height: 36, anchor: new
                         Microsoft.Maps.Point(18, 18), draggable: false});
 
-                var pinInfobox{{ forloop.counter }} = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0,0), {title: 'My Pushpin{{ forloop.counter }}', visible: true});
+                var pinInfobox{{ forloop.counter }} = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), {title: 'My Pushpin{{ forloop.counter }}', visible: true});
 
                 Microsoft.Maps.Events.addHandler(pin{{ forloop.counter }}, 'click', displayInfobox{{ forloop.counter }});
 
@@ -58,21 +58,23 @@
 
             {% endfor %}
 
-            {% for group in groups %}
-                var lineCoordiantes{{ forloop.counter }} = [
-                    {% for point in points %}
-                        {% if point.group == group %}
-                            new Microsoft.Maps.Location({{ point.ETRS89lat }}, {{ point.ETRS89lng }}),
-                        {% endif %}
-                    {% endfor   %}
-                ];
+            {% if points|length > 1 %}
+                {% for group in groups %}
+                    var lineCoordiantes{{ forloop.counter }} = [
+                        {% for point in points %}
+                            {% if point.group == group %}
+                                new Microsoft.Maps.Location({{ point.ETRS89lat }}, {{ point.ETRS89lng }}),
+                            {% endif %}
+                        {% endfor   %}
+                    ];
 
-                var line{{ forloop.counter }} = new Microsoft.Maps.{% if group.type == 'PL' %}Polyline{% else %}
-                    Polygon{% endif %}(lineCoordiantes{{ forloop.counter }},{fillColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeThickness: 2});
+                    var line{{ forloop.counter }} = new Microsoft.Maps.{% if group.type == 'PL' %}Polyline{% else %}
+                        Polygon{% endif %}(lineCoordiantes{{ forloop.counter }},{fillColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeThickness: 2});
 
-                // Add the polyline to the map
-                map.entities.push(line{{ forloop.counter }});
-            {% endfor %}
+                    // Add the polyline to the map
+                    map.entities.push(line{{ forloop.counter }});
+                {% endfor %}
+            {% endif %}
 
 
 

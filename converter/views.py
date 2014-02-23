@@ -77,9 +77,16 @@ def process(request):
                     g.save()
                     group.append(g.pk)
                     print('change')
-            OSGBe[i], OSGBn[i], OSGBh[i] = points[i][0], points[i][1], points[i][2]
-            input_type.append('OSGB')
-            ETRS89lat[i], ETRS89lng[i], ETRS89h[i] = webgui_convert(points[i][0], points[i][1], points[i][2], convert)
+            if system == 'NE':
+                OSGBe[i], OSGBn[i], OSGBh[i] = points[i][0], points[i][1], points[i][2]
+                input_type.append('OSGB')
+                ETRS89lat[i], ETRS89lng[i], ETRS89h[i] = webgui_convert(points[i][0], points[i][1], points[i][2],
+                                                                        convert)
+            elif system == 'DD':
+                ETRS89lat[i], ETRS89lng[i], ETRS89h[i] = points[i][0], points[i][1], points[i][2]
+                input_type.append('ETRS89')
+                OSGBe[i], OSGBn[i], OSGBh[i] = webgui_reverse(points[i][0], points[i][1], points[i][2])
+
         data = zip(label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, group, input_type)
         print(data)
     else:
@@ -98,8 +105,7 @@ def process(request):
         group.append(g.pk)
         if system == 'NE':
 
-            OSGBe[0], OSGBn[0], OSGBh[0] = float(request.POST['east']), float(request.POST['north']), float(
-                request.POST['height'])
+            OSGBe[0], OSGBn[0], OSGBh[0] = float(request.POST['east']), float(request.POST['north']), float(request.POST['height'])
             input_type.append('OSGB')
             ETRS89lat[0], ETRS89lng[0], ETRS89h[0] = webgui_convert(float(request.POST['east']),
                                                                     float(request.POST['north']),
@@ -107,10 +113,20 @@ def process(request):
 
         elif system == 'DMS':
             input_type.append('ETRS89')
-            ETRS89lat[0] = float(request.POST['latd']) + (float(request.POST['latm']) / 60) + (
-                float(request.POST['lats']) / 3600)
-            ETRS89lng[0] = float(request.POST['lngd']) + (float(request.POST['lngm']) / 60) + (
-                float(request.POST['lngs']) / 3600)
+            if float(request.POST['latd']) > 0:
+                ETRS89lat[0] = float(request.POST['latd']) + (float(request.POST['latm']) / 60) + (
+                    float(request.POST['lats']) / 3600)
+
+            else:
+                ETRS89lat[0] = float(request.POST['latd']) - (float(request.POST['latm']) / 60) - (
+                    float(request.POST['lats']) / 3600)
+            if float(request.POST['lngd']) > 0:
+                ETRS89lng[0] = float(request.POST['lngd']) + (float(request.POST['lngm']) / 60) + (
+                    float(request.POST['lngs']) / 3600)
+            else:
+                ETRS89lng[0] = float(request.POST['lngd']) - (float(request.POST['lngm']) / 60) - (
+                    float(request.POST['lngs']) / 3600)
+
             ETRS89h[0] = float(request.POST['height'])
             OSGBe[0], OSGBn[0], OSGBh[0] = webgui_reverse(ETRS89lat[0], ETRS89lng[0], ETRS89h[0])
 
@@ -192,6 +208,8 @@ def kml(request, survey_id):
         survey = Survey.objects.get(pk=survey_id)
         points = Points.objects.filter(survey=survey)
         groups = Groups.objects.filter(survey=survey)
+        for group in groups:
+            group.colour = group.colour[4:6] + group.colour[2:4] + group.colour[0:2]
         file = render(request, 'converter/survey.kml', {'survey': survey, 'points': points, 'groups': groups})
         response = HttpResponse(file, content_type='application/vnd.google-earth.kml+xml')
         response['Content-Length'] = len(response.content)

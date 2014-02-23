@@ -13,34 +13,67 @@
 
         var osMap;
 
-        // This function creates the map and is called by the div in the HTML
 
         function init() {
 
-// Create new map
 
             osMap = new OpenSpace.Map('map');
 
-// Set map centre in National Grid Eastings and Northings and select zoom level 3
 
             osMap.setCenter(new OpenSpace.MapPoint({{ points.0.OSGBe }}, {{ points.0.OSGBn }}), 20);
 
-// Creating the variables to hold the custom marker and then loading it
             {% load staticfiles %}
             var size = new OpenLayers.Size(36, 36);
-            var offset = new OpenLayers.Pixel(18, 18);
+            var offset = new OpenLayers.Pixel(-18, -18);
             var icon = new OpenSpace.Icon('{% static "converter/target.png" %}', size, offset);
 
-// Creating a postion for the marker and then adding it
+
             {% for point in points %}
-            var pos = new OpenSpace.MapPoint({{ point.OSGBe }}, {{ point.OSGBn }});
-            osMap.createMarker(pos, icon);
+                var pos = new OpenSpace.MapPoint({{ point.OSGBe }}, {{ point.OSGBn }});
+                osMap.createMarker(pos, icon);
             {% endfor %}
 
+            {% if points|length > 1 %}
+                {% for group in groups %}
+                    vectorLayer{{ forloop.counter }} = new OpenLayers.Layer.Vector("group{{ forloop.counter }}");
+                    var points{{ forloop.counter }} = [];
+                    {% for point in points %}
+                        {% if point.group == group %}
+                            points{{ forloop.parentloop.counter }}.push(new OpenLayers.Geometry.Point({{ point.OSGBe }}, {{ point.OSGBn }}));
+                        {% endif %}
+                    {% endfor   %}
 
-            clusterControl = new OpenSpace.Control.ClusterManager();
-            osMap.addControl(clusterControl);
-            clusterControl.activate();}
+                    var style =
+                    {
+                        strokeColor: "#{{ group.colour }}",
+                        strokeOpacity: 1,
+                        strokeWidth: 2,
+                        fillColor: "#{{ group.colour }}",
+                        fillOpacity: 0.6
+                    };
+                    {% if group.type == 'PL' %}
+                        var lineString{{ forloop.counter }} = new OpenLayers.Geometry.LineString(points{{ forloop.counter }});
+                        var lineFeature{{ forloop.counter }} = new OpenLayers.Feature.Vector(lineString{{ forloop.counter }}, null, style);
+                        vectorLayer{{ forloop.counter }}.addFeatures([lineFeature{{ forloop.counter }}]);
+                    {% else %}
+                        var linearRing{{ forloop.counter }} = new OpenLayers.Geometry.LinearRing(points{{ forloop.counter }});
+                        var polygonFeature{{ forloop.counter }} = new OpenLayers.Feature.Vector(linearRing{{ forloop.counter }}, null, style);
+                        vectorLayer{{ forloop.counter }}.addFeatures([polygonFeature{{ forloop.counter }} ]);
+
+                    {% endif %}
+                    osMap.addLayer(vectorLayer{{ forloop.counter }});
+                {% endfor %}
+
+            {% endif %}
+
+
+
+
+
+        clusterControl = new OpenSpace.Control.ClusterManager();
+        osMap.addControl(clusterControl);
+        clusterControl.activate();
+        }
     </script>
 
     <style>

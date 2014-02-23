@@ -4,21 +4,12 @@
 <head>
     {% load staticfiles %}
     <title>Surveyplot - Transform and display Coordinates</title>
-    <link rel="stylesheet" href="http://formalize.me/assets/css/demo.css"/>
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://formalize.me/assets/js/jquery.formalize.js"></script>
+    <!--<link rel="stylesheet" href="http://formalize.me/assets/css/demo.css"/> -->
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-theme.css' %}"/>
+
     <style type="text/css">
-        .container {
-            font-family: 'Arial';
-            background-color: #c6f0fb;
-            width: 400px;
-            border: 1px solid #000;
-            border-radius: 10px;
-            padding: 15px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 70px;
-        }
+
 
         .smalltextbox {
             width: 50px;
@@ -35,78 +26,105 @@
         .centre {
             margin-left: auto;
             margin-right: auto;
-            margin-top: 70px;
+            margin-top: 50px;
             width: 150px;
         }
+
 
     </style>
 </head>
 <body>
+
+
 <div class="container">
-    <h1>Transform Coordinates</h1>
 
-
-    <form enctype="multipart/form-data" action="{% url 'converter:process' %}" method="post">
-        {% csrf_token %}
-        <input type="text" name="name" placeholder="Insert Name Here"></br>
-        <select name="system" id="system">
-            <option value="NE">Eastings/Northings</option>
-            <option value="DD">Decimal Degrees</option>
-            <option value="DMS">Degree Minute Second</option>
-        </select>
-        <label for="system">Input System Used</label> <br/>
-
-        <div id="userinput">
-            <div id="en">
-                <input type="number" min="0" max="700000" step="0.001" name="east" id="east" class="largetextbox"/>
-                <label for="east">Easting</label><br/>
-                <input type="number" min="0" max="1250000" step="0.001" name="north" id="north" class="largetextbox"/>
-                <label for="north">Northing</label><br/>
+    <!-- Static navbar -->
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Transform Coordinates</a>
             </div>
-            <div id="dd">
-                <input type="number" min="-90" max="90" step="0.00000000001" name="latdd" id="latdd"
-                       class="largetextbox"/>
-                <label for="latdd">Latitude</label><br/>
-                <input type="number" min="-180" max="180" step="0.00000000001" name="lngdd" id="lngdd"
-                       class="largetextbox"/>
-                <label for="lngdd">Longitude</label><br/>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li id="cscont" class="active"><a id="changepoint" href="#">Single Point</a></li>
+                    <li id="cfcont"><a id="changefile" href="#">File Input</a></li>
+                </ul>
             </div>
-            <div id="dms">
-                <input type="number" min="-90" max="90" step="1" name="latd" id="latd" class="smalltextbox"/>
-                <input type="number" min="0" max="60" step="1" name="latm" id="latm" class="smalltextbox"/>
-                <input type="number" min="0" max="60" step="0.000001" name="lats" id="lats" class="normaltextbox"/>
-                <label for="lats">Latitude</label><br/>
-                <input type="number" min="-180" max="180" step="1" name="lngd" id="lngd" class="smalltextbox"/>
-                <input type="number" min="0" max="60" step="1" name="lngm" id="lngm" class="smalltextbox"/>
-                <input type="number" min="0" max="60" step="0.000001" name="lngs" id="lngs" class="normaltextbox"/>
-                <label for="lngs">Longitude</label><br/>
-            </div>
-
-            <input type="number" min="0" max="2500" step="0.001" name="height" id="height" class="largetextbox">
-            <label for="height">Height</label><br/>
         </div>
-        <div id="file">
-            <input type="file" name="path" id="path"
-                   accept=".csv">
-            <label for="file">Select CSV File</label>
-        </div>
-        <input type="checkbox" name="convert" id="convert">
-        <label for="convert">Use Experimental Converter?</label><br/>
-        <input type="checkbox" name="usefile" id="usefile">
-        <label for="usefile">Input File?</label><br/>
-        <input type="submit" value="Convert"/></br>
+    </div>
+
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+
+        <form enctype="multipart/form-data" action="{% url 'converter:process' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Insert Name Here" required></br>
+            <select name="system" id="system">
+                <option value="NE">Eastings/Northings</option>
+                <option value="DD">Decimal Degrees</option>
+            </select>
+            <label for="system">Input System Used</label> <br/>
+
+            <div id="userinput">
+                <div id="en">
+                    <input type="number" min="0" max="700000" step="0.001" name="east" id="east" class="largetextbox"/>
+                    <label for="east">Easting</label><br/>
+                    <input type="number" min="0" max="1250000" step="0.001" name="north" id="north"
+                           class="largetextbox"/>
+                    <label for="north">Northing</label><br/>
+                </div>
+                <div id="dd">
+                    <input type="number" min="-90" max="90" step="0.00000000001" name="latdd" id="latdd"
+                           class="largetextbox"/>
+                    <label for="latdd">Latitude</label><br/>
+                    <input type="number" min="-180" max="180" step="0.00000000001" name="lngdd" id="lngdd"
+                           class="largetextbox"/>
+                    <label for="lngdd">Longitude</label><br/>
+                </div>
+                <div id="dms">
+                    <input type="number" min="-90" max="90" step="1" name="latd" id="latd" class="smalltextbox"/>
+                    <input type="number" min="0" max="60" step="1" name="latm" id="latm" class="smalltextbox"/>
+                    <input type="number" min="0" max="60" step="0.000001" name="lats" id="lats" class="normaltextbox"/>
+                    <label for="lats">Latitude</label><br/>
+                    <input type="number" min="-180" max="180" step="1" name="lngd" id="lngd" class="smalltextbox"/>
+                    <input type="number" min="0" max="60" step="1" name="lngm" id="lngm" class="smalltextbox"/>
+                    <input type="number" min="0" max="60" step="0.000001" name="lngs" id="lngs" class="normaltextbox"/>
+                    <label for="lngs">Longitude</label><br/>
+                </div>
+
+                <input type="number" min="0" max="2500" step="0.001" name="height" id="height" class="largetextbox">
+                <label for="height">Height</label><br/>
+            </div>
+            <div id="file">
+                <input type="file" name="path" id="path"
+                       accept=".csv">
+                <label for="file">Select CSV File</label>
+
+            </div>
+            <input type="checkbox" name="convert" id="convert">
+            <label for="convert">Use Experimental Converter?</label><br/>
+            <input type="submit" value="Convert" class="btn btn-primary"/></br>
 
 
-    </form>
+        </form>
+    </div>
 
 </div>
+
 <div class="centre">
-    <button type="button" onclick="location.href='{% static "converter/Field course test.csv" %}'">Download Test File
+    <button type="button" class="btn btn-info"
+            onclick="location.href='{% static "converter/Field course test.csv" %}'">Download Test File
     </button>
 </div>
 </body>
-
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="{% static 'bootstrap/js/bootstrap.js' %}"></script
+<!--<script src="http://formalize.me/assets/js/jquery.formalize.js"></script>-->
 <script>
+    function toggleTabs() {
+
+    }
+
     function updateUI() {
         if ($('#system').val().match('NE')) {
             $('#en').show()
@@ -121,12 +139,18 @@
             $('#dd').hide();
             $('#dms').show();
         }
-        if ($('#usefile').is(':checked')) {
+
+
+        if ($('#cfcont').hasClass("active")) {
             $('#file').show()
+            $('#comment').show()
             $('#userinput').hide()
+            $("select option[value='DMS']").remove()
         } else {
             $('#file').hide()
+            $('#comment').hide()
             $('#userinput').show()
+            $('#system').append('<option value="DMS">Degree Minute Second</option>')
         }
     }
     history.navigationMode = 'compatible';
@@ -141,6 +165,22 @@
                 });
 
             })
+
+    $("#changefile").click(function () {
+        if ($('#cscont').hasClass("active")) {
+            $('#cscont').removeClass("active")
+            $('#cfcont').addClass("active")
+            updateUI()
+        }
+    })
+
+    $("#changepoint").click(function() {
+        if ($('#cfcont').hasClass("active")) {
+            $('#cfcont').removeClass("active")
+            $('#cscont').addClass("active")
+            updateUI()
+        }
+    })
 
     $("#usefile")
             .change(function () {

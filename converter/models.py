@@ -11,6 +11,7 @@ class Groups(models.Model):
     survey = models.ForeignKey(Survey)
     colour = models.CharField(max_length=6)
     type = models.CharField(max_length=2)
+    single_point = models.BooleanField()
     def __unicode__(self):
         return self.survey
 

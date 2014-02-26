@@ -4,7 +4,10 @@
     {% load staticfiles %}
     <title>Survey {{ survey.name }} on Google Maps</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-theme.css' %}"/>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
     <style type="text/css">
         html {
             height: 100%
@@ -13,11 +16,14 @@
         body {
             height: 100%;
             margin: 0;
-            padding: 0
+            padding: 0;
+
         }
 
         #map-canvas {
-            height: 100%
+            height: 100%;
+            width: 100%;
+
         }
     </style>
     <script type="text/javascript"
@@ -60,8 +66,9 @@
                 });
             {% endfor %}
 
-            {% if points|length > 1 %}
-                {% for group in groups %}
+
+            {% for group in groups %}
+                {% if group.single_point == False %}
                     var lineCoordiantes = [
                         {% for point in points %}
                             {% if point.group == group %}
@@ -79,13 +86,38 @@
                         fillOpacity: 0.35
                     })
                     line.setMap(map);
-                {% endfor %}
-            {% endif %}
+                {% endif %}
+            {% endfor %}
+
         }
         google.maps.event.addDomListener(window, 'load', initialize);
+
     </script>
 </head>
 <body>
+<div class="container">
+    <div class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">{{ survey.name }}</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a id="review" href="{% url 'converter:review' survey.id %}">Review</a></li>
+                    <li class="active"><a id="gmaps" href="{% url 'converter:gmap' survey.id %}">Google Maps</a></li>
+                    <li><a id="bmaps" href="{% url 'converter:bmap' survey.id %}">Bing Maps</a></li>
+                    <li><a id="osmaps" href="{% url 'converter:OSmap' survey.id %}">Ordnance Survey Maps</a></li>
+                    <li><a id="openstreetmaps" href="{% url 'converter:ostreetmap' survey.id %}">Open Street Maps</a>
+                    </li>
+                    <li><a id="kml" href="{% url 'converter:kml' survey.id %}">KML Download</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'converter:index' %}">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="map-canvas"/>
 </body>
 </html>

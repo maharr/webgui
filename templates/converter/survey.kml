@@ -35,6 +35,7 @@
         <Folder>
             <name>Groups</name>
             {% for group in groups %}
+            {% if group.single_point == False %}
             <Placemark>
                 <name>Group {{ forloop.counter }}</name>
                 <visibility>0</visibility>
@@ -78,6 +79,7 @@
                 </Polygon>
                 {% endif %}
             </Placemark>
+            {% endif %}
             {% endfor %}
         </Folder>
         {% endif %}

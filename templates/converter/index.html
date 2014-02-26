@@ -27,6 +27,7 @@
             margin-left: auto;
             margin-right: auto;
             margin-top: 50px;
+            margin-bottom: 50px;
             width: 150px;
         }
 
@@ -58,7 +59,7 @@
 
         <form enctype="multipart/form-data" action="{% url 'converter:process' %}" method="post">
             {% csrf_token %}
-            <input type="text" name="name" placeholder="Insert Name Here" required></br>
+            <input type="text" name="name" placeholder="Insert Name Here" style="margin-bottom: 5px" required></br>
             <select name="system" id="system">
                 <option value="NE">Eastings/Northings</option>
                 <option value="DD">Decimal Degrees</option>
@@ -104,21 +105,27 @@
             <input type="checkbox" name="convert" id="convert">
             <label for="convert">Use Experimental Converter?</label><br/>
             <input type="submit" value="Convert" class="btn btn-primary"/></br>
+            <input type="hidden" value="False" id="usefile" name="usefile">
 
 
         </form>
     </div>
 
-</div>
 
-<div class="centre">
-    <button type="button" class="btn btn-info"
-            onclick="location.href='{% static "converter/Field course test.csv" %}'">Download Test File
-    </button>
+    <div class="centre">
+        <button type="button" class="btn btn-info"
+                onclick="location.href='{% static "converter/Field course test.csv" %}'">Download Test File
+        </button>
+    </div>
+    <div class="well" id="comment" style="width: 60%; margin-right: auto; margin-left: auto">
+        <p>File should be in format id,e,n,h or id,lat,lng,h <br> Groups of points should be consecutive in file and
+            have an incrementing integer ending each id <br> build1,build2,build3 would be grouped together, as would
+            12,13,14 </p>
+    </div>
 </div>
 </body>
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="{% static 'bootstrap/js/bootstrap.js' %}"></script
+<script src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
 <!--<script src="http://formalize.me/assets/js/jquery.formalize.js"></script>-->
 <script>
     function toggleTabs() {
@@ -145,12 +152,17 @@
             $('#file').show()
             $('#comment').show()
             $('#userinput').hide()
-            $("select option[value='DMS']").remove()
+            $("#system option[value='DMS']").remove()
+            $("#usefile").val("True")
         } else {
             $('#file').hide()
             $('#comment').hide()
             $('#userinput').show()
-            $('#system').append('<option value="DMS">Degree Minute Second</option>')
+            if ($("#system option[value='DMS']").length == 0) {
+                $('#system').append('<option value="DMS">Degree Minute Second</option>')
+            }
+
+            $("#usefile").val("False")
         }
     }
     history.navigationMode = 'compatible';
@@ -174,7 +186,7 @@
         }
     })
 
-    $("#changepoint").click(function() {
+    $("#changepoint").click(function () {
         if ($('#cfcont').hasClass("active")) {
             $('#cfcont').removeClass("active")
             $('#cscont').addClass("active")

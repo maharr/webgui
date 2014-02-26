@@ -3,90 +3,111 @@
 <head>
     {% load staticfiles %}
     <title>Review {{ survey.name }}</title>
-    <script type="text/javascript" src="{% static "converter/jscolor.js" %}"></script>
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <style type="text/css">
-        .container {
-            font-family: 'Arial';
-            background-color: #c6f0fb;
-            width: 400px;
-            border: 1px solid #000000;
-            border-radius: 10px;
-            padding: 5px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 10px;
-        }
-
-        .title {
-            font-family: 'Arial';
-            background-color: #c6f0fb;
-            width: 400px;
-            border: 2px solid #000000;
-            border-radius: 10px;
-            padding: 15px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 70px;
-
-        }
-
-        .smalltextbox {
-            width: 50px;
-        }
-
-        .normaltextbox {
-            width: 80px;
-        }
-
-        .largetextbox {
-            width: 100px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-theme.css' %}"/>
 
 </head>
 <body>
-
-<h1 class="title">{{ survey.name }}</h1>
-
-
-{% for group in groups %}
-    <div class="container">
-    {% if points|length > 1 %}
-        <form enctype="multipart/form-data" action="{% url 'converter:update_group' %}" method="post"
-              id="group{{ forloop.counter }}">
-            {% csrf_token %}
-            <h4>Group {{ forloop.counter }}</h4>
-            <input type="hidden" name="group_id" value="{{ group.pk }}">
-            <input type="text" class="color" value="{{ group.colour }}" id="colour"
-                   name="colour">
-            <label for="colour">Colour</label>
-
-            <select name="type" id="type">
-                <option value="PL"{% if group.type == 'PL' %} selected="selected"{% endif %}>PolyLine</option>
-                <option value="PG"{% if group.type == 'PG' %} selected="selected"{% endif %}>Polygon</option>
-            </select>
-            <label for="type">Line Type</label></br>
-            <input type="submit" value="Save" id="button{{ forloop.counter }}">
-        </form>
-        <div id="result{{ forloop.counter }}"></div>
-    {% else %}
-        <h4>Single Point</h4>
-    {% endif %}
-    </div>
-{% endfor %}
-
 <div class="container">
-    <button type="button" onclick="location.href='{% url 'converter:gmap' survey.id %}'">Google Maps</button>
-    <button type="button" onclick="location.href='{% url 'converter:bmap' survey.id %}'">Bing Maps</button>
-    </br>
-    <button type="button" onclick="location.href='{% url 'converter:ostreetmap' survey.id %}'">Open Streetmaps</button>
-    <button type="button" onclick="location.href='{% url 'converter:OSmap' survey.id %}'">OS Maps</button>
-    <button type="button" onclick="location.href='{% url 'converter:kml' survey.id %}'">KML Download</button>
+    <div class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">{{ survey.name }}</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a id="review" href="{% url 'converter:review' survey.id %}">Review</a></li>
+                    <li><a id="gmaps" href="{% url 'converter:gmap' survey.id %}">Google Maps</a></li>
+                    <li><a id="bmaps" href="{% url 'converter:bmap' survey.id %}">Bing Maps</a></li>
+                    <li><a id="osmaps" href="{% url 'converter:OSmap' survey.id %}">Ordnance Survey Maps</a></li>
+                    <li><a id="openstreetmaps" href="{% url 'converter:ostreetmap' survey.id %}">Open Street Maps</a>
+                    </li>
+                    <li><a id="kml" href="{% url 'converter:kml' survey.id %}">KML Download</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'converter:index' %}">Home</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        {% for group in groups %}
+            {% if group.single_point == False %}
+
+                <div class="col-sm-4">
+                    <div style="height: 200px;">
+
+                        <div class="panel panel-primary">
+
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Group {{ forloop.counter }}</h3>
+                            </div>
+                            <div class="panel-body">
+                                <form enctype="multipart/form-data" action="{% url 'converter:update_group' %}"
+                                      method="post"
+                                      id="group{{ forloop.counter }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="group_id" value="{{ group.pk }}">
+                                    <input type="text" class="color" value="{{ group.colour }}" id="colour"
+                                           name="colour">
+                                    <label for="colour">Colour</label></br>
+
+                                    <select name="type" id="type">
+                                        <option value="PL"{% if group.type == 'PL' %} selected="selected"{% endif %}>
+                                            PolyLine
+                                        </option>
+                                        <option value="PG"{% if group.type == 'PG' %} selected="selected"{% endif %}>
+                                            Polygon
+                                        </option>
+                                    </select>
+                                    <label for="type">Line Type</label></br>
+                                    <input type="submit" value="Save" id="button{{ forloop.counter }}"
+                                           class="btn btn-primary">
+
+                                    <div id="result{{ forloop.counter }}" class="alert alert-success"
+                                         style="display: none; padding: 2px 2px 2px 2px; margin-top: 7px; margin-bottom: 0px"></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+
+                <div class="col-sm-4">
+                    <div style="height: 200px;">
+                        <div class="panel panel-primary">
+
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Group {{ forloop.counter }}</h3>
+                            </div>
+                            <div class="panel-body">Single Point</div>
+                        </div>
+                    </div>
+                </div>
+
+
+            {% endif %}
+
+
+
+        {% endfor %}
+    </div>
+<div class="well" id="comment" style="width: 60%; margin-right: auto; margin-left: auto" >
+    <p>The link <a href="{% url 'converter:review' survey.id %}">{{ survey.name }}</a> is a permalink. It can be shared or used to review your survey at a later date</p>
 </div>
 
+</div>
+
+<script type="text/javascript" src="{% static "converter/jscolor.js" %}"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
 <script>
+
+    $(document).ready(function () {
+
+    })
 
     $(document).ajaxComplete(function () {
         {% for group in groups %}

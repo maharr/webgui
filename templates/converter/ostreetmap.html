@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {% load staticfiles %}
     <title>Survey {{ survey.name }} on Open Street Map</title>
     <meta charset="utf-8"/>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-theme.css' %}"/>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
     <style type="text/css">
         html {
             height: 100%
@@ -23,13 +28,37 @@
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css"/>
 </head>
 <body>
+<div class="container">
+    <div class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">{{ survey.name }}</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a id="review" href="{% url 'converter:review' survey.id %}">Review</a></li>
+                    <li><a id="gmaps" href="{% url 'converter:gmap' survey.id %}">Google Maps</a></li>
+                    <li><a id="bmaps" href="{% url 'converter:bmap' survey.id %}">Bing Maps</a></li>
+                    <li><a id="osmaps" href="{% url 'converter:OSmap' survey.id %}">Ordnance Survey Maps</a></li>
+                    <li class="active"><a id="openstreetmaps" href="{% url 'converter:ostreetmap' survey.id %}">Open
+                        Street Maps</a>
+                    </li>
+                    <li><a id="kml" href="{% url 'converter:kml' survey.id %}">KML Download</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'converter:index' %}">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="map"></div>
 
 <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 <script>
 
     var map = L.map('map').setView([{{ points.0.ETRS89lat }}, {{ points.0.ETRS89lng }}], 18);
-    {% load staticfiles %}
+
     var greenIcon = L.icon({
         iconUrl: '{% static "converter/target.png" %}',
 
@@ -47,19 +76,19 @@
         L.marker([{{ point.ETRS89lat }}, {{ point.ETRS89lng }}], {icon: greenIcon}).addTo(map);
     {% endfor %}
 
-    {% if points|length > 1 %}
-        {% for group in groups %}
+
+    {% for group in groups %}
+        {% if group.single_point == False %}
             L.{% if group.type == 'PL' %}polyline{% else %}polygon{% endif %}([
                 {% for point in points %}
                     {% if point.group == group %}
                         [{{ point.ETRS89lat }}, {{ point.ETRS89lng }}],
                     {% endif %}
                 {% endfor   %}
-            ], {color: '#{{ group.colour }}'}).addTo(map);
+            ],{color: '#{{ group.colour }}'}).addTo(map);
+        {% endif %}
 
-        {% endfor %}
-    {% endif %}
-
+    {% endfor %}
 
 
 </script>

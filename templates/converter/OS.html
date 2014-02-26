@@ -2,7 +2,12 @@
 <html>
 <head>
     <meta charset="utf-8">
+    {% load staticfiles %}
     <title>Survey {{ survey.name }} on Ordnance Survey Map</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-theme.css' %}"/>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
 
     <!-- Remember to insert your own API key in the URL below -->
 
@@ -22,19 +27,20 @@
 
             osMap.setCenter(new OpenSpace.MapPoint({{ points.0.OSGBe }}, {{ points.0.OSGBn }}), 20);
 
-            {% load staticfiles %}
+
             var size = new OpenLayers.Size(36, 36);
             var offset = new OpenLayers.Pixel(-18, -18);
             var icon = new OpenSpace.Icon('{% static "converter/target.png" %}', size, offset);
 
 
             {% for point in points %}
-                var pos = new OpenSpace.MapPoint({{ point.OSGBe }}, {{ point.OSGBn }});
-                osMap.createMarker(pos, icon);
+                var pos{{ forloop.counter }} = new OpenSpace.MapPoint({{ point.OSGBe }}, {{ point.OSGBn }});
+                osMap.createMarker(pos{{ forloop.counter }}, icon);
             {% endfor %}
 
-            {% if points|length > 1 %}
-                {% for group in groups %}
+
+            {% for group in groups %}
+                {% if group.single_point == False %}
                     vectorLayer{{ forloop.counter }} = new OpenLayers.Layer.Vector("group{{ forloop.counter }}");
                     var points{{ forloop.counter }} = [];
                     {% for point in points %}
@@ -62,17 +68,18 @@
 
                     {% endif %}
                     osMap.addLayer(vectorLayer{{ forloop.counter }});
-                {% endfor %}
-
-            {% endif %}
-
+                {% endif %}
+            {% endfor %}
 
 
 
 
-        clusterControl = new OpenSpace.Control.ClusterManager();
-        osMap.addControl(clusterControl);
-        clusterControl.activate();
+
+
+
+            clusterControl = new OpenSpace.Control.ClusterManager();
+            osMap.addControl(clusterControl);
+            clusterControl.activate();
         }
     </script>
 
@@ -89,7 +96,30 @@
 </head>
 
 <body onload="init()">
-
+<div class="container">
+    <div class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">{{ survey.name }}</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a id="review" href="{% url 'converter:review' survey.id %}">Review</a></li>
+                    <li><a id="gmaps" href="{% url 'converter:gmap' survey.id %}">Google Maps</a></li>
+                    <li><a id="bmaps" href="{% url 'converter:bmap' survey.id %}">Bing Maps</a></li>
+                    <li class="active"><a id="osmaps" href="{% url 'converter:OSmap' survey.id %}">Ordnance Survey
+                        Maps</a></li>
+                    <li><a id="openstreetmaps" href="{% url 'converter:ostreetmap' survey.id %}">Open Street Maps</a>
+                    </li>
+                    <li><a id="kml" href="{% url 'converter:kml' survey.id %}">KML Download</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'converter:index' %}">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- The div below holds the map -->
 

@@ -50,7 +50,7 @@ def process(request):
     print(s.pk)
     if "convert" in request.POST.keys():
         convert = True
-    if "usefile" in request.POST.keys():
+    if request.POST['usefile'] == 'True':
         points, totalrows, label = handle_uploaded_file(request.FILES['path'])
         print(points)
         OSGBe = numpy.zeros(totalrows)
@@ -63,20 +63,27 @@ def process(request):
         group = []
         for i in range(0, totalrows, 1):
             if i == 0:
-                g = Groups(survey=s, colour='FF0000', type='PL')
+                g = Groups(survey=s, colour='FF0000', type='PL', single_point=False)
                 print('initial')
                 g.save()
                 group.append(g.pk)
             else:
-                if (int(label[i - 1][-1:]) == int(label[i][-1:]) - 1) or (
-                            int(label[i - 1][-1:]) == int(label[i][-1:]) + 9):
-                    group.append(g.pk)
-                    print('same, do nothing')
-                else:
-                    g = Groups(survey=s, colour='FF0000', type='PL')
+                try:
+                    if (int(label[i - 1][-1:]) == int(label[i][-1:]) - 1) or (
+                                int(label[i - 1][-1:]) == int(label[i][-1:]) + 9):
+                        group.append(g.pk)
+                        print('same, do nothing')
+                    else:
+                        g = Groups(survey=s, colour='FF0000', type='PL', single_point=False)
+                        g.save()
+                        group.append(g.pk)
+                        print('change')
+                except ValueError:
+                    g = Groups(survey=s, colour='FF0000', type='PL', single_point=False)
                     g.save()
                     group.append(g.pk)
                     print('change')
+
             if system == 'NE':
                 OSGBe[i], OSGBn[i], OSGBh[i] = points[i][0], points[i][1], points[i][2]
                 input_type.append('OSGB')
@@ -86,6 +93,13 @@ def process(request):
                 ETRS89lat[i], ETRS89lng[i], ETRS89h[i] = points[i][0], points[i][1], points[i][2]
                 input_type.append('ETRS89')
                 OSGBe[i], OSGBn[i], OSGBh[i] = webgui_reverse(points[i][0], points[i][1], points[i][2])
+        groupset = set(group)
+        print(groupset)
+        for groupcheck in groupset:
+            if group.count(groupcheck) == 1:
+                g = Groups.objects.get(pk=groupcheck)
+                g.single_point = True
+                g.save()
 
         data = zip(label, OSGBe, OSGBn, OSGBh, ETRS89lat, ETRS89lng, ETRS89h, group, input_type)
         print(data)
@@ -99,7 +113,7 @@ def process(request):
         input_type = []
         group = []
         label = 'Single Point'
-        g = Groups(survey=s, colour='FF0000', type='PL')
+        g = Groups(survey=s, colour='FF0000', type='PL', single_point=True)
         print('single')
         g.save()
         group.append(g.pk)

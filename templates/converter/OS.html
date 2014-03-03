@@ -30,10 +30,11 @@
 
             var size = new OpenLayers.Size(36, 36);
             var offset = new OpenLayers.Pixel(-18, -18);
-            var icon = new OpenSpace.Icon('{% static "converter/target.png" %}', size, offset);
+
 
 
             {% for point in points %}
+                var icon = new OpenSpace.Icon('{% static "converter/target.png" %}', size, offset);
                 var pos{{ forloop.counter }} = new OpenSpace.MapPoint({{ point.OSGBe }}, {{ point.OSGBn }});
                 osMap.createMarker(pos{{ forloop.counter }}, icon);
             {% endfor %}

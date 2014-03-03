@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+        {% load staticfiles %}
 <kml xmlns="http://www.opengis.net/kml/2.2">
     <Document>
         <name>{{ survey.name }}</name>
         <description>Survey Data processed by surveyplot.co.uk</description>
         {% for group in groups %}
+        <Style id="point">
+            <IconStyle>
+                <scale>1</scale>
+                <Icon>
+                    <href>{% static "converter/target.png" %}</href>
+                </Icon>
+            </IconStyle>
+        </Style>
         <Style id="group{{ forloop.counter }}">
             <LineStyle>
                 <color>ff{{ group.colour }}</color>
@@ -24,6 +33,7 @@
 
                     Produced by surveyplot.co.uk
                 </description>
+
                 <Point>
                     <altitudeMode>clampToGround</altitudeMode>
                     <coordinates>{{ point.ETRS89lng }},{{ point.ETRS89lat }},{{ point.ETRS89h }}</coordinates>
@@ -41,14 +51,6 @@
                 <visibility>0</visibility>
                 <description>Produced by surveyplot.co.uk</description>
                 <styleUrl>#group{{ forloop.counter }}</styleUrl>
-                <LookAt>
-                    <longitude>{{ points.0.ETRS89lng }}</longitude>
-                    <latitude>{{ points.0.ETRS89lat }}</latitude>
-                    <altitude>{{ points.0.ETRSh }}</altitude>
-                    <heading>0</heading>
-                    <tilt>45</tilt>
-                    <range>150</range>
-                </LookAt>
                 {% if group.type == 'PL' %}
                 <LineString>
                     <tessellate>1</tessellate>

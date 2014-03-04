@@ -95,7 +95,7 @@
         {% endfor %}
     </div>
 <div class="well" id="comment" style="width: 60%; margin-right: auto; margin-left: auto" >
-    <p>The link <a href="{% url 'converter:review' survey.id %}">{{ survey.name }}</a> is a permalink. It can be shared or used to review your survey at a later date</p>
+    <p>The link <a href="{% url 'converter:review' survey.id %}">{{ survey.name }}</a> is a permalink. It can be shared <a href="mailto:?subject=Shared Survey from surveyplot.co.uk&body=Please find my survey {{ survey }} available at http://www.surveyplot.co.uk{% url 'converter:review' survey.id %}">By Email</a> or used to review your survey at a later date</p>
 </div>
 
 </div>

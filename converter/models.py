@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Max
 
 class Survey(models.Model):
     date = models.DateTimeField(auto_now_add=True)

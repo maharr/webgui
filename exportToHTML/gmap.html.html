@@ -1,0 +1,153 @@
+<html>
+<head>
+<title>gmap.html</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(248,248,242); }
+.s1 { color: rgb(166,226,46); }
+.s2 { color: rgb(227,227,255); font-weight: bold; }
+.s3 { color: rgb(230,219,116); font-weight: bold; }
+.s4 { color: rgb(230,219,116); }
+.s5 { color: rgb(249,38,114); }
+.s6 { color: rgb(102,217,239); font-style: italic; }
+.s7 { color: rgb(174,129,255); }
+.s8 { color: rgb(204,120,50); }
+</style>
+</head>
+<BODY BGCOLOR="#272822">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+gmap.html</FONT>
+</center></TD></TR></TABLE>
+<pre>
+
+<span class="s0">&lt;!DOCTYPE </span><span class="s1">html</span><span class="s0">&gt; 
+&lt;</span><span class="s2">html</span><span class="s0">&gt; 
+&lt;</span><span class="s2">head</span><span class="s0">&gt; 
+    {% </span><span class="s2">load </span><span class="s1">staticfiles </span><span class="s0">%} 
+    &lt;</span><span class="s2">title</span><span class="s0">&gt;Survey {{ </span><span class="s1">survey</span><span class="s0">.</span><span class="s1">name </span><span class="s0">}} on Google Maps&lt;/</span><span class="s2">title</span><span class="s0">&gt; 
+    &lt;</span><span class="s2">meta </span><span class="s1">name=</span><span class="s3">&quot;viewport&quot; </span><span class="s1">content=</span><span class="s3">&quot;initial-scale=1.0, user-scalable=no&quot;</span><span class="s0">/&gt; 
+    &lt;</span><span class="s2">link </span><span class="s1">rel=</span><span class="s3">&quot;stylesheet&quot; </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">static </span><span class="s4">'bootstrap/css/bootstrap.css' </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">/&gt; 
+    &lt;</span><span class="s2">link </span><span class="s1">rel=</span><span class="s3">&quot;stylesheet&quot; </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">static </span><span class="s4">'bootstrap/css/bootstrap-theme.css' </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">/&gt; 
+    &lt;</span><span class="s2">script </span><span class="s1">src=</span><span class="s3">&quot;http://code.jquery.com/jquery-1.9.1.js&quot;</span><span class="s0">&gt;&lt;/</span><span class="s2">script</span><span class="s0">&gt; 
+    &lt;</span><span class="s2">script </span><span class="s1">src=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">static </span><span class="s4">'bootstrap/js/bootstrap.js' </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">&gt;&lt;/</span><span class="s2">script</span><span class="s0">&gt; 
+    &lt;</span><span class="s2">style </span><span class="s1">type=</span><span class="s3">&quot;text/css&quot;</span><span class="s0">&gt; 
+        </span><span class="s5">html </span><span class="s0">{ 
+            </span><span class="s6">height</span><span class="s0">: </span><span class="s7">100</span><span class="s0">% 
+        } 
+ 
+        </span><span class="s5">body </span><span class="s0">{ 
+            </span><span class="s6">height</span><span class="s0">: </span><span class="s7">100</span><span class="s0">%; 
+            </span><span class="s6">margin</span><span class="s0">: </span><span class="s7">0</span><span class="s0">; 
+            </span><span class="s6">padding</span><span class="s0">: </span><span class="s7">0</span><span class="s0">; 
+ 
+        } 
+ 
+        </span><span class="s1">#map-canvas </span><span class="s0">{ 
+            </span><span class="s6">height</span><span class="s0">: </span><span class="s7">100</span><span class="s0">%; 
+            </span><span class="s6">width</span><span class="s0">: </span><span class="s7">100</span><span class="s0">%; 
+ 
+        } 
+    &lt;/</span><span class="s2">style</span><span class="s0">&gt; 
+    &lt;</span><span class="s2">script </span><span class="s1">type=</span><span class="s3">&quot;text/javascript&quot;</span><span class="s0"> 
+            </span><span class="s1">src=</span><span class="s3">&quot;https://maps.googleapis.com/maps/api/js?key=AIzaSyBYe7rAdWWGkwLHb0UQFfVMMXXwX6enYbE&amp;sensor=false&quot;</span><span class="s0">&gt; 
+    &lt;/</span><span class="s2">script</span><span class="s0">&gt; 
+    &lt;</span><span class="s2">script </span><span class="s1">type=</span><span class="s3">&quot;text/javascript&quot;</span><span class="s0">&gt; 
+        </span><span class="s5">function </span><span class="s0">initialize() { 
+            </span><span class="s5">var </span><span class="s0">myLatLng </span><span class="s5">= new </span><span class="s0">google.maps.LatLng({{ </span><span class="s1">points</span><span class="s0">.</span><span class="s7">0</span><span class="s0">.</span><span class="s1">ETRS89lat </span><span class="s0">}}</span><span class="s8">, </span><span class="s0">{{ </span><span class="s1">points</span><span class="s0">.</span><span class="s7">0</span><span class="s0">.</span><span class="s1">ETRS89lng </span><span class="s0">}}) 
+            </span><span class="s5">var </span><span class="s0">mapOptions </span><span class="s5">= </span><span class="s0">{ 
+                center</span><span class="s5">: </span><span class="s0">myLatLng</span><span class="s8">,</span><span class="s0"> 
+                zoom</span><span class="s5">: </span><span class="s7">19</span><span class="s8">,</span><span class="s0"> 
+                mapTypeId</span><span class="s5">: </span><span class="s0">google.maps.MapTypeId.SATELLITE 
+            }</span><span class="s8">;</span><span class="s0"> 
+            </span><span class="s5">var </span><span class="s0">map </span><span class="s5">= new </span><span class="s0">google.maps.Map(document.getElementById(</span><span class="s4">&quot;map-canvas&quot;</span><span class="s0">)</span><span class="s8">,</span><span class="s0"> 
+                    mapOptions)</span><span class="s8">;</span><span class="s0"> 
+            {% </span><span class="s2">load </span><span class="s1">staticfiles </span><span class="s0">%} 
+ 
+            </span><span class="s5">var </span><span class="s0">markerImage </span><span class="s5">= new </span><span class="s0">google.maps.MarkerImage(</span><span class="s4">'</span><span class="s0">{% </span><span class="s2">static </span><span class="s4">&quot;converter/target.png&quot; </span><span class="s0">%}</span><span class="s4">'</span><span class="s8">,</span><span class="s0"> 
+                    </span><span class="s5">new </span><span class="s0">google.maps.Size(</span><span class="s7">36</span><span class="s8">, </span><span class="s7">36</span><span class="s0">)</span><span class="s8">,</span><span class="s0"> 
+                    </span><span class="s5">new </span><span class="s0">google.maps.Point(</span><span class="s7">0</span><span class="s8">, </span><span class="s7">0</span><span class="s0">)</span><span class="s8">,</span><span class="s0"> 
+                    </span><span class="s5">new </span><span class="s0">google.maps.Point(</span><span class="s7">18</span><span class="s8">, </span><span class="s7">18</span><span class="s0">) 
+            )</span><span class="s8">;</span><span class="s0"> 
+ 
+            {% </span><span class="s2">for </span><span class="s1">point </span><span class="s5">in </span><span class="s1">points </span><span class="s0">%} 
+                </span><span class="s5">var </span><span class="s0">contentString{{ </span><span class="s1">forloop</span><span class="s0">.</span><span class="s1">counter </span><span class="s0">}} </span><span class="s5">= </span><span class="s4">'Point label: </span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">label </span><span class="s0">}}</span><span class="s4"> &lt;/br&gt;' </span><span class="s5">+</span><span class="s0"> 
+                        </span><span class="s4">'ETRS89:</span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">ETRS89lat </span><span class="s0">}}</span><span class="s4">, </span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">ETRS89lng </span><span class="s0">}}</span><span class="s4">, </span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">ETRS89h </span><span class="s0">}}</span><span class="s4"> &lt;/br&gt;' </span><span class="s5">+</span><span class="s0"> 
+                        </span><span class="s4">'OSGB36:</span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">OSGBe </span><span class="s0">}}</span><span class="s4">, </span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">OSGBn </span><span class="s0">}}</span><span class="s4">, </span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">OSGBh </span><span class="s0">}}</span><span class="s4">&lt;/br&gt;&lt;/br&gt;' </span><span class="s5">+</span><span class="s0"> 
+                        </span><span class="s4">'Produced by surveyplot.co.uk'</span><span class="s0"> 
+                </span><span class="s5">var </span><span class="s0">infowindow{{ </span><span class="s1">forloop</span><span class="s0">.</span><span class="s1">counter </span><span class="s0">}} </span><span class="s5">= new </span><span class="s0">google.maps.InfoWindow({ 
+                    content</span><span class="s5">: </span><span class="s0">contentString{{ </span><span class="s1">forloop</span><span class="s0">.</span><span class="s1">counter </span><span class="s0">}} 
+                })</span><span class="s8">;</span><span class="s0"> 
+                </span><span class="s5">var </span><span class="s0">marker{{ </span><span class="s1">forloop</span><span class="s0">.</span><span class="s1">counter </span><span class="s0">}} </span><span class="s5">= new </span><span class="s0">google.maps.Marker({ 
+                    position</span><span class="s5">: new </span><span class="s0">google.maps.LatLng({{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">ETRS89lat </span><span class="s0">}}</span><span class="s8">, </span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">ETRS89lng </span><span class="s0">}})</span><span class="s8">,</span><span class="s0"> 
+                    icon</span><span class="s5">: </span><span class="s0">markerImage</span><span class="s8">,</span><span class="s0"> 
+                    map</span><span class="s5">: </span><span class="s0">map</span><span class="s8">,</span><span class="s0"> 
+                    title</span><span class="s5">: </span><span class="s4">'</span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">label </span><span class="s0">}}</span><span class="s4">'</span><span class="s0"> 
+                })</span><span class="s8">;</span><span class="s0"> 
+                google.maps.event.addListener(marker{{ </span><span class="s1">forloop</span><span class="s0">.</span><span class="s1">counter </span><span class="s0">}}</span><span class="s8">, </span><span class="s4">'click'</span><span class="s8">, </span><span class="s5">function </span><span class="s0">() { 
+                    infowindow{{ </span><span class="s1">forloop</span><span class="s0">.</span><span class="s1">counter </span><span class="s0">}}.open(map</span><span class="s8">, </span><span class="s0">marker{{ </span><span class="s1">forloop</span><span class="s0">.</span><span class="s1">counter </span><span class="s0">}})</span><span class="s8">;</span><span class="s0"> 
+                })</span><span class="s8">;</span><span class="s0"> 
+            {% </span><span class="s2">endfor </span><span class="s0">%} 
+ 
+ 
+            {% </span><span class="s2">for </span><span class="s1">group </span><span class="s5">in </span><span class="s1">groups </span><span class="s0">%} 
+                {% </span><span class="s2">if </span><span class="s1">group</span><span class="s0">.</span><span class="s1">single_point </span><span class="s0">== </span><span class="s1">False </span><span class="s0">%} 
+                    </span><span class="s5">var </span><span class="s0">lineCoordiantes </span><span class="s5">= </span><span class="s0">[ 
+                        {% </span><span class="s2">for </span><span class="s1">point </span><span class="s5">in </span><span class="s1">points </span><span class="s0">%} 
+                            {% </span><span class="s2">if </span><span class="s1">point</span><span class="s0">.</span><span class="s1">group </span><span class="s0">== </span><span class="s1">group </span><span class="s0">%} 
+                                </span><span class="s5">new </span><span class="s0">google.maps.LatLng({{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">ETRS89lat </span><span class="s0">}}</span><span class="s8">, </span><span class="s0">{{ </span><span class="s1">point</span><span class="s0">.</span><span class="s1">ETRS89lng </span><span class="s0">}})</span><span class="s8">,</span><span class="s0"> 
+                            {% </span><span class="s2">endif </span><span class="s0">%} 
+                        {% </span><span class="s2">endfor   </span><span class="s0">%} 
+                    ]</span><span class="s8">;</span><span class="s0"> 
+                    </span><span class="s5">var </span><span class="s0">line </span><span class="s5">= new </span><span class="s0">google.maps.{% </span><span class="s2">if </span><span class="s1">group</span><span class="s0">.</span><span class="s1">type </span><span class="s0">== </span><span class="s4">'PL' </span><span class="s0">%}Polyline{% </span><span class="s2">else </span><span class="s0">%}Polygon{% </span><span class="s2">endif </span><span class="s0">%}({ 
+                        path</span><span class="s5">: </span><span class="s0">lineCoordiantes</span><span class="s8">,</span><span class="s0"> 
+                        geodesic</span><span class="s5">: true</span><span class="s8">,</span><span class="s0"> 
+                        strokeColor</span><span class="s5">: </span><span class="s4">'</span><span class="s0">{{ </span><span class="s1">group</span><span class="s0">.</span><span class="s1">colour </span><span class="s0">}}</span><span class="s4">'</span><span class="s8">,</span><span class="s0"> 
+                        strokeOpacity</span><span class="s5">: </span><span class="s7">1.0</span><span class="s8">,</span><span class="s0"> 
+                        strokeWeight</span><span class="s5">: </span><span class="s7">2</span><span class="s8">,</span><span class="s0"> 
+                        fillColor</span><span class="s5">: </span><span class="s4">'</span><span class="s0">{{ </span><span class="s1">group</span><span class="s0">.</span><span class="s1">colour </span><span class="s0">}}</span><span class="s4">'</span><span class="s8">,</span><span class="s0"> 
+                        fillOpacity</span><span class="s5">: </span><span class="s7">0.35</span><span class="s0"> 
+                    }) 
+                    line.setMap(map)</span><span class="s8">;</span><span class="s0"> 
+                {% </span><span class="s2">endif </span><span class="s0">%} 
+            {% </span><span class="s2">endfor </span><span class="s0">%} 
+ 
+        } 
+        google.maps.event.addDomListener(window</span><span class="s8">, </span><span class="s4">'load'</span><span class="s8">, </span><span class="s0">initialize)</span><span class="s8">;</span><span class="s0"> 
+ 
+    &lt;/</span><span class="s2">script</span><span class="s0">&gt; 
+&lt;/</span><span class="s2">head</span><span class="s0">&gt; 
+&lt;</span><span class="s2">body</span><span class="s0">&gt; 
+&lt;</span><span class="s2">div </span><span class="s1">class=</span><span class="s3">&quot;container&quot;</span><span class="s0">&gt; 
+    &lt;</span><span class="s2">div </span><span class="s1">class=</span><span class="s3">&quot;navbar navbar-default&quot;</span><span class="s0">&gt; 
+        &lt;</span><span class="s2">div </span><span class="s1">class=</span><span class="s3">&quot;container-fluid&quot;</span><span class="s0">&gt; 
+            &lt;</span><span class="s2">div </span><span class="s1">class=</span><span class="s3">&quot;navbar-header&quot;</span><span class="s0">&gt; 
+                &lt;</span><span class="s2">a </span><span class="s1">class=</span><span class="s3">&quot;navbar-brand&quot;</span><span class="s0">&gt;{{ </span><span class="s1">survey</span><span class="s0">.</span><span class="s1">name </span><span class="s0">}}&lt;/</span><span class="s2">a</span><span class="s0">&gt; 
+            &lt;/</span><span class="s2">div</span><span class="s0">&gt; 
+            &lt;</span><span class="s2">div </span><span class="s1">class=</span><span class="s3">&quot;navbar-collapse collapse&quot;</span><span class="s0">&gt; 
+                &lt;</span><span class="s2">ul </span><span class="s1">class=</span><span class="s3">&quot;nav navbar-nav&quot;</span><span class="s0">&gt; 
+                    &lt;</span><span class="s2">li</span><span class="s0">&gt;&lt;</span><span class="s2">a </span><span class="s1">id=</span><span class="s3">&quot;review&quot; </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">url </span><span class="s4">'converter:review' </span><span class="s1">survey</span><span class="s0">.</span><span class="s1">id </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">&gt;Review&lt;/</span><span class="s2">a</span><span class="s0">&gt;&lt;/</span><span class="s2">li</span><span class="s0">&gt; 
+                    &lt;</span><span class="s2">li </span><span class="s1">class=</span><span class="s3">&quot;active&quot;</span><span class="s0">&gt;&lt;</span><span class="s2">a </span><span class="s1">id=</span><span class="s3">&quot;gmaps&quot; </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">url </span><span class="s4">'converter:gmap' </span><span class="s1">survey</span><span class="s0">.</span><span class="s1">id </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">&gt;Google Maps&lt;/</span><span class="s2">a</span><span class="s0">&gt;&lt;/</span><span class="s2">li</span><span class="s0">&gt; 
+                    &lt;</span><span class="s2">li</span><span class="s0">&gt;&lt;</span><span class="s2">a </span><span class="s1">id=</span><span class="s3">&quot;bmaps&quot; </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">url </span><span class="s4">'converter:bmap' </span><span class="s1">survey</span><span class="s0">.</span><span class="s1">id </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">&gt;Bing Maps&lt;/</span><span class="s2">a</span><span class="s0">&gt;&lt;/</span><span class="s2">li</span><span class="s0">&gt; 
+                    &lt;</span><span class="s2">li</span><span class="s0">&gt;&lt;</span><span class="s2">a </span><span class="s1">id=</span><span class="s3">&quot;osmaps&quot; </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">url </span><span class="s4">'converter:OSmap' </span><span class="s1">survey</span><span class="s0">.</span><span class="s1">id </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">&gt;Ordnance Survey Maps&lt;/</span><span class="s2">a</span><span class="s0">&gt;&lt;/</span><span class="s2">li</span><span class="s0">&gt; 
+                    &lt;</span><span class="s2">li</span><span class="s0">&gt;&lt;</span><span class="s2">a </span><span class="s1">id=</span><span class="s3">&quot;openstreetmaps&quot; </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">url </span><span class="s4">'converter:ostreetmap' </span><span class="s1">survey</span><span class="s0">.</span><span class="s1">id </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">&gt;Open Street Maps&lt;/</span><span class="s2">a</span><span class="s0">&gt; 
+                    &lt;/</span><span class="s2">li</span><span class="s0">&gt; 
+                    &lt;</span><span class="s2">li</span><span class="s0">&gt;&lt;</span><span class="s2">a </span><span class="s1">id=</span><span class="s3">&quot;kml&quot; </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">url </span><span class="s4">'converter:kml' </span><span class="s1">survey</span><span class="s0">.</span><span class="s1">id </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">&gt;KML Download&lt;/</span><span class="s2">a</span><span class="s0">&gt;&lt;/</span><span class="s2">li</span><span class="s0">&gt; 
+                &lt;/</span><span class="s2">ul</span><span class="s0">&gt; 
+                &lt;</span><span class="s2">ul </span><span class="s1">class=</span><span class="s3">&quot;nav navbar-nav navbar-right&quot;</span><span class="s0">&gt; 
+                    &lt;</span><span class="s2">li</span><span class="s0">&gt;&lt;</span><span class="s2">a </span><span class="s1">href=</span><span class="s3">&quot;</span><span class="s0">{% </span><span class="s2">url </span><span class="s4">'converter:index' </span><span class="s0">%}</span><span class="s3">&quot;</span><span class="s0">&gt;Home&lt;/</span><span class="s2">a</span><span class="s0">&gt;&lt;/</span><span class="s2">li</span><span class="s0">&gt; 
+                &lt;/</span><span class="s2">ul</span><span class="s0">&gt; 
+            &lt;/</span><span class="s2">div</span><span class="s0">&gt; 
+        &lt;/</span><span class="s2">div</span><span class="s0">&gt; 
+    &lt;/</span><span class="s2">div</span><span class="s0">&gt; 
+&lt;/</span><span class="s2">div</span><span class="s0">&gt; 
+&lt;</span><span class="s2">div </span><span class="s1">id=</span><span class="s3">&quot;map-canvas&quot;</span><span class="s0">/&gt; 
+&lt;/</span><span class="s2">body</span><span class="s0">&gt; 
+&lt;/</span><span class="s2">html</span><span class="s0">&gt; 
+ 
+ 
+</span></pre>
+</body>
+</html>

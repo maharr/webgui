@@ -16,7 +16,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a id="review" href="{% url 'converter:review' survey.id %}">Review</a></li>
+                    <li class="active"><a id="review" href="{% url 'converter:review' survey.id %}">Display Properties</a></li>
                     <li><a id="gmaps" href="{% url 'converter:gmap' survey.id %}">Google Maps</a></li>
                     <li><a id="bmaps" href="{% url 'converter:bmap' survey.id %}">Bing Maps</a></li>
                     <li><a id="osmaps" href="{% url 'converter:OSmap' survey.id %}">Ordnance Survey Maps</a></li>
@@ -42,7 +42,7 @@
                         <div class="panel panel-primary">
 
                             <div class="panel-heading">
-                                <h3 class="panel-title">Group {{ forloop.counter }}</h3>
+                                <h3 class="panel-title">Group {{ forloop.counter }} Display Options</h3>
                             </div>
                             <div class="panel-body">
                                 <form enctype="multipart/form-data" action="{% url 'converter:update_group' %}"
@@ -52,17 +52,17 @@
                                     <input type="hidden" name="group_id" value="{{ group.pk }}">
                                     <input type="text" class="color" value="{{ group.colour }}" id="colour"
                                            name="colour">
-                                    <label for="colour">Colour</label></br>
+                                    <label for="colour">Click to choose Colour</label></br>
 
                                     <select name="type" id="type">
                                         <option value="PL"{% if group.type == 'PL' %} selected="selected"{% endif %}>
-                                            PolyLine
+                                            Line
                                         </option>
                                         <option value="PG"{% if group.type == 'PG' %} selected="selected"{% endif %}>
-                                            Polygon
+                                            Shaded Area
                                         </option>
                                     </select>
-                                    <label for="type">Line Type</label></br>
+                                    <label for="type">Choose Line or Area</label></br>
                                     <input type="submit" value="Save" id="button{{ forloop.counter }}"
                                            class="btn btn-primary">
 
@@ -80,9 +80,9 @@
                         <div class="panel panel-primary">
 
                             <div class="panel-heading">
-                                <h3 class="panel-title">Group {{ forloop.counter }}</h3>
+                                <h3 class="panel-title">Group {{ forloop.counter }} Display Options</h3>
                             </div>
-                            <div class="panel-body">Single Point</div>
+                            <div class="panel-body">Single Point's have no display options</div>
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
         {% endfor %}
     </div>
 <div class="well" id="comment" style="width: 60%; margin-right: auto; margin-left: auto" >
-    <p>The link <a href="{% url 'converter:review' survey.id %}">{{ survey.name }}</a> is a permalink. It can be shared <a href="mailto:?subject=Shared Survey from surveyplot.co.uk&body=Please find my survey {{ survey }} available at http://www.surveyplot.co.uk{% url 'converter:review' survey.id %}">By Email</a> or used to review your survey at a later date</p>
+    <p>The link <a href="{% url 'converter:review' survey.id %}">{{ survey.name }}</a> is a permalink. It can be shared <a href="mailto:?subject=Shared Survey from surveyplot.co.uk&body=Please find my survey {{ survey }} available at http://www.surveyplot.co.uk{% url 'converter:review' survey.id %}">By Email</a> or used to return to this page at a later date</p>
 </div>
 
 </div>

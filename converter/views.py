@@ -159,7 +159,7 @@ def process(request):
                    ETRS89lng=ETRS89lng, ETRS89h=ETRS89h, group=Groups.objects.get(pk=group), input_type=input_type)
         p.save()
         print(p.pk)
-    return HttpResponseRedirect(reverse('converter:review', args=(s.id,)))
+    return HttpResponseRedirect(reverse('converter:gmap', args=(s.id,)))
 
 
 def gmap(request, survey_id):

@@ -56,7 +56,7 @@
                         strokeOpacity: 1,
                         strokeWidth: 2,
                         fillColor: "#{{ group.colour }}",
-                        fillOpacity: 0.6
+                        fillOpacity: 0.35
                     };
                     {% if group.type == 'PL' %}
                         var lineString{{ forloop.counter }} = new OpenLayers.Geometry.LineString(points{{ forloop.counter }});

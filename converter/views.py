@@ -4,10 +4,11 @@ import csv
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 import numpy
+import json, urllib2
 from django.core.urlresolvers import reverse
 
 from converter.models import Survey, Points, Groups
-from transformation.transformation.OSTN02 import webgui_convert, webgui_reverse
+from transformation.transformation.OSTN02 import webgui_convert, webgui_reverse, webgui_single
 
 
 #text/csv
@@ -36,6 +37,27 @@ def handle_uploaded_file(f):
 #  for chunk in f.chunks():
 #       destination.write(chunk)
 
+def convert(request):
+    position = request.POST['position']
+    positions = position.split(',')
+    positions[0] = positions[0].lstrip('(')
+    positions[1] = positions[1].rstrip(')')
+    lat = float(positions[0])
+    lng = float(positions[1])
+    if request.POST['height'] == 'Bing':
+        url = 'http://dev.virtualearth.net/REST/v1/Elevation/List?points=' + str(lat) + ',' + str(lng) + '&key=AlSJP5QjV5T4SERHq84m_c4BIlOcPiOXLb1o3tFgF1wJuFmoXlMuxDgGZB3fZmGl'
+        data = json.load(urllib2.urlopen(url))
+        height = str(data['resourceSets'][0]['resources'][0]['elevations'])
+        height = height.lstrip('[')
+        height = height.rstrip(']')
+        height = float(height)
+        print height
+    else:
+        height = float(request.POST['height'])
+        print(height)
+
+    e, n, h = webgui_single(lat, lng, height)
+    return render(request, 'converter/convert.html', {'OSGBe': round(e, 3), 'OSGBn': round(n,3), 'OSGBh': round(h,3)})
 
 def index(request):
     return render(request, 'converter/index.html')

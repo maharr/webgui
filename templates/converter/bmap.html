@@ -28,9 +28,10 @@
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 
     <script type="text/javascript">
+        var map = null;
         function GetMap() {
 
-            var map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
+            map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
                     {credentials: "AlSJP5QjV5T4SERHq84m_c4BIlOcPiOXLb1o3tFgF1wJuFmoXlMuxDgGZB3fZmGl",
                         center: new Microsoft.Maps.Location({{ points.0.ETRS89lat }}, {{ points.0.ETRS89lng }}),
                         mapTypeId: Microsoft.Maps.MapTypeId.aerial,
@@ -43,21 +44,19 @@
                 var pin{{ forloop.counter }} = new Microsoft.Maps.Pushpin(loc{{ forloop.counter }}, {icon: '{% static "converter/target.png" %}', width: 36, height: 36, anchor: new
                         Microsoft.Maps.Point(18, 18), draggable: false});
 
-                var pinInfobox{{ forloop.counter }} = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), {title: 'My Pushpin{{ forloop.counter }}', visible: true});
+                var infoboxOptions{{ forloop.counter }} = {visible: false, showPointer: true, showCloseButton: true, description: '<b> Point label: {{ point.label }} </b> </br>' +
+                        'ETRS89:{{ point.ETRS89lat }}, {{ point.ETRS89lng }}, {{ point.ETRS89h }} </br>' +
+                        'OSGB36:{{ point.OSGBe }}, {{ point.OSGBn }}, {{ point.OSGBh }}</br></br>' +
+                        'Produced by surveyplot.co.uk'};
+                var pinInfobox{{ forloop.counter }} = new Microsoft.Maps.Infobox(loc{{ forloop.counter }}, infoboxOptions{{ forloop.counter }});
+                map.entities.push(pinInfobox{{ forloop.counter }});
 
                 Microsoft.Maps.Events.addHandler(pin{{ forloop.counter }}, 'click', displayInfobox{{ forloop.counter }});
 
-                Microsoft.Maps.Events.addHandler(map, 'viewchange', hideInfobox{{ forloop.counter }});
-
                 map.entities.push(pin{{ forloop.counter }});
-                map.entities.push(pinInfobox{{ forloop.counter }});
 
                 function displayInfobox{{ forloop.counter }}(e) {
                     pinInfobox{{ forloop.counter }}.setOptions({ visible: true });
-                }
-
-                function hideInfobox{{ forloop.counter }}(e) {
-                    pinInfobox{{ forloop.counter }}.setOptions({ visible: false });
                 }
 
             {% endfor %}
@@ -74,17 +73,59 @@
                     ];
 
                     var line{{ forloop.counter }} = new Microsoft.Maps.{% if group.type == 'PL' %}Polyline{% else %}
-                        Polygon{% endif %}(lineCoordiantes{{ forloop.counter }},{fillColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeThickness: 2});
+                        Polygon{% endif %}(lineCoordiantes{{ forloop.counter }},{fillColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeColor: new Microsoft.Maps.Color.fromHex('#{{ group.colour }}'), strokeThickness: 2, opacity: 35});
 
                     // Add the polyline to the map
                     map.entities.push(line{{ forloop.counter }});
                 {% endif %}
             {% endfor %}
 
-
+            Microsoft.Maps.Events.addHandler(map, 'click', function (e) {
+                addPin(e);
+            });
 
 
         }
+        function showInfoDrag(loc, info) {
+            //var loc = e.entity.getLocation();
+            var loca =loc
+
+            loc = String(loc)
+            loc = loc.replace('Location ', '');
+
+            loc = loc.replace('[', '(')
+            loc = loc.replace(']', ')')
+
+
+            $.post("/convert/", { csrfmiddlewaretoken: '{{ csrf_token }}', position: String(loc), height: 'Bing' })
+                    .done(function (data) {
+                        info.setOptions({description: data, visible: true});
+                        info.setLocation(loca);
+                    }, 'json');
+
+
+        }
+        function addPin(e) {
+            if (e.targetType == "map") {
+                var point = new Microsoft.Maps.Point(e.getX(), e.getY());
+                var loc = e.target.tryPixelToLocation(point);
+                var pin = new Microsoft.Maps.Pushpin(loc, {draggable: true});
+
+
+                var infoboxOptions = {visible: false, showPointer: false, showCloseButton: false};
+                var pinInfobox = new Microsoft.Maps.Infobox(loc, infoboxOptions);
+
+                Microsoft.Maps.Events.addHandler(pin, 'dragend', function () {
+                    showInfoDrag(pin.getLocation(), pinInfobox)
+                });
+
+                map.entities.push(pinInfobox);
+                map.entities.push(pin);
+
+
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -112,10 +153,10 @@
     </div>
 </div>
 <div id='mapDiv' style="position: relative;">
-<script >
-    $(document).ready(function () {
-        GetMap();
-    })
-</script>
+    <script>
+        $(document).ready(function () {
+            GetMap();
+        })
+    </script>
 </body>
 </html>

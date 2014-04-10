@@ -27,7 +27,7 @@
             <name>Points</name>
             {% for point in points %}
             <Placemark>
-                <name>Point {{ point.label }}</name>
+                <name>{{ point.label }}</name>
                 <description>ETRS89:{{ point.ETRS89lat }}, {{ point.ETRS89lng }}, {{ point.ETRS89h }}
                     OSGB36:{{ point.OSGBe }}, {{ point.OSGBn }}, {{ point.OSGBh }}
 

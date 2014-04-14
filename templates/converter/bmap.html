@@ -29,6 +29,7 @@
 
     <script type="text/javascript">
         var map = null;
+        var MAP_DRAG = True;
         function GetMap() {
 
             map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
@@ -36,6 +37,7 @@
                         center: new Microsoft.Maps.Location({{ points.0.ETRS89lat }}, {{ points.0.ETRS89lng }}),
                         mapTypeId: Microsoft.Maps.MapTypeId.aerial,
                         zoom: 19});
+
 
 
             {% for point in points %}
@@ -106,7 +108,7 @@
 
         }
         function addPin(e) {
-            if (e.targetType == "map") {
+            if (e.targetType == "map" && MAP_DRAG == False) {
                 var point = new Microsoft.Maps.Point(e.getX(), e.getY());
                 var loc = e.target.tryPixelToLocation(point);
                 var pin = new Microsoft.Maps.Pushpin(loc, {draggable: true});
@@ -120,6 +122,10 @@
                 });
                 Microsoft.Maps.Events.addHandler(pin, 'dragstart', function () {
                     pinInfobox.setOptions({visible: false});
+                });
+                Microsoft.Maps.Events.addHandler(pin, 'dblclick', function () {
+                    map.entities.remove(pin);
+                    map.entities.remove(pinInfobox);
                 });
 
                 map.entities.push(pinInfobox);

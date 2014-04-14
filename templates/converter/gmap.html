@@ -113,6 +113,9 @@
                 google.maps.event.addListener(marker, 'dragend', function () {
                     updateInfo(marker.getPosition(), map, this, infowindow, elevator);
                 });
+                google.maps.event.addListener(marker, "dblclick", function () {
+                    marker.setMap(null);
+                });
                 updateInfo(marker.getPosition(), map, marker, infowindow, elevator);
             }
 

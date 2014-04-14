@@ -45,7 +45,8 @@ def convert(request):
     lat = float(positions[0])
     lng = float(positions[1])
     if request.POST['height'] == 'Bing':
-        url = 'http://dev.virtualearth.net/REST/v1/Elevation/List?points=' + str(lat) + ',' + str(lng) + '&key=AlSJP5QjV5T4SERHq84m_c4BIlOcPiOXLb1o3tFgF1wJuFmoXlMuxDgGZB3fZmGl'
+        url = 'http://dev.virtualearth.net/REST/v1/Elevation/List?points=' + str(lat) + ',' + str(
+            lng) + '&key=AlSJP5QjV5T4SERHq84m_c4BIlOcPiOXLb1o3tFgF1wJuFmoXlMuxDgGZB3fZmGl'
         data = json.load(urllib2.urlopen(url))
         height = str(data['resourceSets'][0]['resources'][0]['elevations'])
         height = height.lstrip('[')
@@ -57,7 +58,8 @@ def convert(request):
         print(height)
 
     e, n, h = webgui_single(lat, lng, height)
-    return render(request, 'converter/convert.html', {'OSGBe': round(e, 3), 'OSGBn': round(n,3), 'OSGBh': round(h,3)})
+    return render(request, 'converter/convert.html', {'OSGBe': round(e, 3), 'OSGBn': round(n, 3), 'OSGBh': round(h, 3)})
+
 
 def index(request):
     return render(request, 'converter/index.html')
@@ -141,7 +143,8 @@ def process(request):
         group.append(g.pk)
         if system == 'NE':
 
-            OSGBe[0], OSGBn[0], OSGBh[0] = float(request.POST['east']), float(request.POST['north']), float(request.POST['height'])
+            OSGBe[0], OSGBn[0], OSGBh[0] = float(request.POST['east']), float(request.POST['north']), float(
+                request.POST['height'])
             input_type.append('OSGB')
             ETRS89lat[0], ETRS89lng[0], ETRS89h[0] = webgui_convert(float(request.POST['east']),
                                                                     float(request.POST['north']),
@@ -149,14 +152,14 @@ def process(request):
 
         elif system == 'DMS':
             input_type.append('ETRS89')
-            if float(request.POST['latd']) > 0:
+            if float(request.POST['latd']) >= 0:
                 ETRS89lat[0] = float(request.POST['latd']) + (float(request.POST['latm']) / 60) + (
                     float(request.POST['lats']) / 3600)
-
             else:
                 ETRS89lat[0] = float(request.POST['latd']) - (float(request.POST['latm']) / 60) - (
                     float(request.POST['lats']) / 3600)
-            if float(request.POST['lngd']) > 0:
+
+            if float(request.POST['lngd']) >= 0:
                 ETRS89lng[0] = float(request.POST['lngd']) + (float(request.POST['lngm']) / 60) + (
                     float(request.POST['lngs']) / 3600)
             else:
